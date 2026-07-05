@@ -1,0 +1,10 @@
+# Trae / ZCode session-interne Dateien
+.uploads/
+_args/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+*.swp
+.vscode/
+.idea/

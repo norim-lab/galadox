@@ -1,0 +1,2060 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Galadox-Label — Gold-Standard Builder (v0.1.3)</title>
+<style>
+/* ============ Galadox-Label Design System (offline, no external assets) ============ */
+:root{
+  --bg:#0f1115;
+  --bg-2:#151922;
+  --panel:#1b2030;
+  --panel-2:#222839;
+  --ink:#e7ecf3;
+  --ink-dim:#9aa3b2;
+  --line:#2a3145;
+  --accent:#7cf2c8;     /* mint */
+  --accent-2:#ffd166;   /* amber */
+  --warn:#ff6b6b;
+  --good:#7cf2c8;
+  --t3:#c084fc;         /* tier-3 violet */
+  --a-col:#7cf2c8;
+  --b-col:#ffd166;
+  --shadow:0 10px 30px rgba(0,0,0,.45);
+  --r:10px;
+  --mono:ui-monospace, SFMono-Regular, "JetBrains Mono", Menlo, Consolas, monospace;
+  --serif:Georgia, "Times New Roman", serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5}
+button{font-family:inherit;cursor:pointer}
+a{color:var(--accent)}
+.app{max-width:1240px;margin:0 auto;padding:24px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:16px;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:20px}
+.brand{display:flex;align-items:center;gap:10px}
+.brand .mark{width:28px;height:28px;border-radius:6px;background:linear-gradient(135deg,#7cf2c8,#ffd166);position:relative}
+.brand .mark::after{content:"";position:absolute;inset:5px;border-radius:3px;background:#0f1115}
+.brand h1{font-family:var(--serif);font-size:22px;letter-spacing:.3px;margin:0;font-weight:600}
+.brand small{color:var(--ink-dim);font-size:12px;margin-left:6px}
+.meta-line{color:var(--ink-dim);font-size:12px;font-family:var(--mono)}
+button.btn, .btn{background:var(--panel);color:var(--ink);border:1px solid var(--line);padding:8px 14px;border-radius:var(--r);font-size:13px;transition:.15s}
+button.btn:hover, .btn:hover{border-color:#3a4361;background:var(--panel-2)}
+button.btn.primary{background:var(--accent);color:#0b1320;border-color:transparent;font-weight:600}
+button.btn.primary:hover{filter:brightness(1.08)}
+button.btn.amber{background:var(--accent-2);color:#2a1e00;border-color:transparent;font-weight:600}
+button.btn.warn{background:transparent;color:var(--warn);border-color:#5a2a30}
+button.btn.warn:hover{background:#2a1518}
+button.btn.t3{background:transparent;color:var(--t3);border-color:#5a3a7a}
+button.btn.t3:hover{background:#23152f}
+button.btn[disabled]{opacity:.4;cursor:not-allowed}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.spacer{flex:1}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;box-shadow:var(--shadow)}
+.panel + .panel{margin-top:14px}
+h2{font-family:var(--serif);font-size:20px;margin:0 0 8px;font-weight:600}
+h3{font-size:14px;margin:0 0 8px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:1.2px;font-weight:600}
+label.field{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--ink-dim)}
+label.field input, label.field select, label.field textarea{
+  background:#0c0f16;color:var(--ink);border:1px solid var(--line);border-radius:8px;
+  padding:9px 11px;font-family:var(--sans);font-size:14px;outline:none
+}
+label.field input:focus, label.field textarea:focus, label.field select:focus{border-color:#3a4361}
+textarea{min-height:90px;resize:vertical;font-family:var(--mono);font-size:12.5px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:#0c0f16;border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:11.5px;color:var(--ink-dim);font-family:var(--mono);white-space:nowrap}
+.chip strong{color:var(--ink);font-weight:600}
+.claim-card{background:#0c0f16;border:1px solid var(--line);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:10px;min-height:280px}
+.claim-card .head{display:flex;align-items:center;justify-content:space-between}
+.claim-card .tag{font-family:var(--mono);font-size:11px;color:#0b1320;background:var(--accent);padding:3px 8px;border-radius:6px;font-weight:700}
+.claim-card.b .tag{background:var(--accent-2)}
+.claim-card .text{font-family:var(--serif);font-size:17.5px;line-height:1.55;color:var(--ink)}
+.claim-card .chips{display:flex;flex-wrap:wrap;gap:6px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:860px){.grid-2,.grid-3{grid-template-columns:1fr}}
+.wizard{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-top:14px}
+.wizard .stephead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.wizard .stephead .q{font-family:var(--serif);font-size:19px;font-weight:600}
+.wizard .progressbar{height:4px;background:#0c0f16;border-radius:3px;overflow:hidden;margin:6px 0 12px}
+.wizard .progressbar .fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-2));width:0%;transition:.25s}
+.wizard .help{font-size:12.5px;color:var(--ink-dim);background:#0c0f16;border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:12px}
+.wizard details.why{font-size:12.5px;color:var(--ink-dim);margin-bottom:10px}
+.wizard details.why summary{cursor:pointer;color:var(--accent);list-style:none}
+.wizard details.why summary::-webkit-details-marker{display:none}
+.wizard details.why summary::before{content:"? Warum diese Frage?  "}
+.wizard .choices{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.wizard .choices.single{grid-template-columns:1fr}
+.wizard .choices button{background:#0c0f16;border:1px solid var(--line);color:var(--ink);border-radius:8px;padding:14px;text-align:left;font-size:13.5px;line-height:1.4}
+.wizard .choices button:hover{border-color:#3a4361;background:#11151f}
+.wizard .choices button .lab{font-family:var(--mono);color:var(--accent);font-size:11px;display:block;margin-bottom:4px;letter-spacing:.5px}
+.wizard .choices button.b .lab{color:var(--accent-2)}
+.wizard .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;align-items:center;justify-content:space-between}
+.wizard .actions .left, .wizard .actions .right{display:flex;gap:8px;flex-wrap:wrap}
+.label-preview{margin-top:14px;padding:14px;border:1px dashed #3a4361;border-radius:8px;background:#0c0f16}
+.label-preview .lab{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.5px}
+.label-preview .val{font-family:var(--serif);font-size:18px;font-weight:600;margin-top:2px}
+.label-preview .desc{color:var(--ink-dim);font-size:12.5px;margin-top:6px}
+.label-preview .path{font-family:var(--mono);font-size:11.5px;color:var(--ink-dim);margin-top:8px}
+.required-missing{border-color:var(--warn) !important}
+.toast{position:fixed;bottom:18px;right:18px;background:#0c0f16;border:1px solid var(--line);padding:10px 14px;border-radius:8px;font-size:12.5px;color:var(--ink);box-shadow:var(--shadow);opacity:0;transform:translateY(10px);transition:.25s;z-index:99;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.err{border-color:#5a2a30;color:#ffb4b4}
+.kbd{font-family:var(--mono);background:#0c0f16;border:1px solid var(--line);border-bottom-width:2px;border-radius:4px;padding:1px 5px;font-size:11px}
+.table{width:100%;border-collapse:collapse;font-size:12.5px}
+.table th,.table td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:left;vertical-align:top}
+.table th{color:var(--ink-dim);font-weight:600;text-transform:uppercase;letter-spacing:.7px;font-size:11px}
+.table tr:hover td{background:#11151f}
+.tag-mini{font-family:var(--mono);font-size:10.5px;padding:1px 6px;border-radius:4px;background:#222839;color:var(--ink-dim);display:inline-block}
+.tag-mini.consensus{background:#1a3a2a;color:var(--good)}
+.tag-mini.dissent{background:#3a1a1a;color:#ffb4b4}
+.tag-mini.t3{background:#2a1f3a;color:var(--t3)}
+.kpi{display:flex;flex-direction:column;gap:4px;background:#0c0f16;border:1px solid var(--line);border-radius:8px;padding:12px}
+.kpi .v{font-family:var(--serif);font-size:24px;font-weight:600}
+.kpi .l{font-size:11px;color:var(--ink-dim);text-transform:uppercase;letter-spacing:.8px}
+.muted{color:var(--ink-dim)}
+.divnode{background:#2a1a1a;border-left:3px solid var(--warn);padding:6px 8px;border-radius:4px;font-size:12px}
+.divnode.a{background:#1a2a23;border-left-color:var(--good)}
+.divnode.b{background:#2a251a;border-left-color:var(--accent-2)}
+.modebar{display:flex;gap:6px;background:#0c0f16;border:1px solid var(--line);padding:4px;border-radius:10px;width:fit-content}
+.modebar button{background:transparent;border:none;color:var(--ink-dim);padding:6px 12px;border-radius:7px;font-size:13px}
+.modebar button.active{background:var(--panel-2);color:var(--ink)}
+.collapsetitle{cursor:pointer;color:var(--ink-dim);font-size:12px;margin-top:14px}
+.collapsetitle:hover{color:var(--ink)}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;z-index:100}
+.modal-bg.show{display:flex}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;max-width:560px;width:90%;box-shadow:var(--shadow)}
+.modal h3{margin-top:0;color:var(--ink)}
+.radio-list{display:flex;flex-wrap:wrap;gap:6px}
+.radio-list label{background:#0c0f16;border:1px solid var(--line);border-radius:6px;padding:5px 10px;font-size:12.5px;cursor:pointer}
+.radio-list input{display:none}
+.radio-list input:checked + span{color:var(--accent)}
+.radio-list label:has(input:checked){border-color:var(--accent);background:#11151f}
+.readonly-banner{background:#3a1a1a;border:1px solid #5a2a30;color:#ffb4b4;padding:9px 13px;border-radius:8px;font-size:13px;margin-bottom:14px;font-weight:600}
+.import-errors{background:#0c0f16;border:1px solid #5a2a30;border-radius:8px;padding:10px 12px;margin-top:10px;font-size:12.5px;color:#ffb4b4}
+.import-errors ul{margin:6px 0 0;padding-left:18px}
+.import-errors strong{color:#ffb4b4}
+
+/* ============ v0.1.3: Verständlichkeits-Schicht (keine Logik) ============ */
+/* Onboarding (Startbildschirm, einklappbar) */
+.onboarding{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:0;margin-bottom:14px;box-shadow:var(--shadow);overflow:hidden}
+.onboarding-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;cursor:pointer;user-select:none}
+.onboarding-head h2{margin:0;font-family:var(--serif);font-size:18px}
+.onboarding-head .chev{color:var(--ink-dim);font-size:13px;transition:.2s}
+.onboarding.collapsed .chev{transform:rotate(-90deg)}
+.onboarding-body{padding:0 18px 16px;border-top:1px solid var(--line);display:block}
+.onboarding.collapsed .onboarding-body{display:none}
+.onboarding-body p{margin:10px 0;line-height:1.55}
+.onboarding-body .lead{font-family:var(--serif);font-size:16px;color:var(--ink)}
+.workflow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:12px 0;padding:12px;background:#0c0f16;border:1px solid var(--line);border-radius:8px}
+.workflow .step{display:flex;align-items:center;gap:8px;background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:8px 12px;font-size:13px}
+.workflow .step .num{font-family:var(--mono);font-size:16px;color:var(--accent);font-weight:700}
+.workflow .arrow{color:var(--ink-dim);font-size:16px}
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+@media (max-width:860px){.roles{grid-template-columns:1fr}}
+.role-card{background:#0c0f16;border:1px solid var(--line);border-radius:8px;padding:12px}
+.role-card h4{margin:0 0 6px;font-size:13px;color:var(--accent);text-transform:uppercase;letter-spacing:.8px}
+.role-card ul{margin:6px 0 0;padding-left:18px;font-size:12.5px;color:var(--ink-dim)}
+.role-card.forbidden{border-color:#5a2a30}
+.role-card.forbidden h4{color:var(--warn)}
+
+/* Modus-Intro (Box oben in jeder Ansicht) */
+.mode-intro{background:#0c0f16;border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:13px;color:var(--ink-dim);line-height:1.55}
+.mode-intro strong{color:var(--ink)}
+.mode-intro .what-now{margin-top:8px;color:var(--ink)}
+.mode-intro .what-now span{color:var(--accent)}
+
+/* Glossar (Startbildschirm, einklappbar) */
+.glossary{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:0;margin-bottom:14px;box-shadow:var(--shadow);overflow:hidden}
+.glossary-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;cursor:pointer;user-select:none}
+.glossary-head h2{margin:0;font-family:var(--serif);font-size:18px}
+.glossary-head .chev{color:var(--ink-dim);font-size:13px;transition:.2s}
+.glossary.collapsed .chev{transform:rotate(-90deg)}
+.glossary-body{padding:0 18px 16px;border-top:1px solid var(--line)}
+.glossary.collapsed .glossary-body{display:none}
+.glossary h3{margin-top:14px}
+.glossary-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+@media (max-width:860px){.glossary-grid{grid-template-columns:1fr}}
+.glossary-card{background:#0c0f16;border:1px solid var(--line);border-radius:8px;padding:12px}
+.glossary-card .lab{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:700;letter-spacing:.5px}
+.glossary-card .def{font-size:13px;color:var(--ink);margin-top:4px}
+.glossary-card .ex{font-size:12.5px;color:var(--ink-dim);margin-top:6px;font-style:italic;border-top:1px dashed var(--line);padding-top:6px}
+.glossary-card .ex::before{content:"Beispiel: "}
+.glossary-terms{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+@media (max-width:860px){.glossary-terms{grid-template-columns:1fr}}
+.glossary-term{background:#0c0f16;border:1px solid var(--line);border-radius:8px;padding:12px}
+.glossary-term .t{font-size:13px;color:var(--ink);font-weight:600}
+.glossary-term .d{font-size:12.5px;color:var(--ink-dim);margin-top:4px}
+
+/* Help-Icon (NEBEN Elementen, niemals in <button>/<label>) */
+.help-icon{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--panel-2);border:1px solid var(--line);color:var(--ink-dim);font-size:10px;font-weight:700;font-family:var(--sans);cursor:help;margin:0 4px;vertical-align:middle}
+.help-icon:hover{border-color:var(--accent);color:var(--accent)}
+.help-field-row{display:flex;align-items:center;gap:6px}
+.help-popover{position:fixed;background:#0c0f16;border:1px solid var(--accent);color:var(--ink);padding:10px 12px;border-radius:8px;font-size:12.5px;line-height:1.5;max-width:280px;box-shadow:var(--shadow);z-index:200;display:none}
+.help-popover.show{display:block}
+
+/* Wizard-Beispiel-Box */
+.example-box{background:#11151f;border:1px dashed var(--accent);border-radius:8px;padding:10px 12px;margin-top:10px;font-size:12.5px;color:var(--ink-dim);line-height:1.55}
+.example-box .lab{font-family:var(--mono);font-size:10.5px;color:var(--accent);letter-spacing:.5px;text-transform:uppercase;display:block;margin-bottom:4px}
+.example-box .ex-item{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line)}
+.example-box .ex-item:first-of-type{border-top:none;padding-top:0;margin-top:0}
+.example-box .ex-item .l{font-family:var(--mono);color:var(--accent);font-size:11px;font-weight:700}
+
+/* "Was tun?"-Hinweis in Fehlermeldungen */
+.err-hint{display:block;color:var(--ink-dim);font-style:italic;margin-top:2px;font-size:11.5px}
+.err-hint::before{content:"Was tun? "}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="top">
+    <div class="brand">
+      <div class="mark"></div>
+      <h1>Galadox-Label <small>v0.1.3 · offline</small></h1>
+    </div>
+    <div class="row">
+      <div class="modebar" id="modebar">
+        <button data-mode="home" class="active">Start</button>
+        <button data-mode="label">Labeln</button>
+        <button data-mode="adjudicate">Adjudizieren</button>
+        <button data-mode="report">Report</button>
+      </div>
+      <span class="meta-line" id="topMeta">kein Datensatz geladen</span>
+    </div>
+  </header>
+
+  <div class="readonly-banner" id="readonlyBanner" style="display:none">Nur-Lesen-Modus: eine andere Sitzung ist aktiv — Speichern, Löschen und Adjudikation sind blockiert.</div>
+
+  <!-- =================== HOME / DATENSATZ LADEN =================== -->
+  <section id="view-home">
+
+    <!-- v0.1.3: ONBOARDING (einklappbar, beim ersten Besuch offen) -->
+    <div class="onboarding" id="onboardingBox">
+      <div class="onboarding-head" id="onboardingToggle">
+        <h2>Was ist Galadox-Label? — Kurzanleitung</h2>
+        <span class="chev">▾</span>
+      </div>
+      <div class="onboarding-body">
+        <p class="lead">Zwei Personen beurteilen unabhängig voneinander dieselben Aussagen-Paare. Das Tool führt dich mit Fragen zum passenden Etikett. Danach werden beide Urteile verglichen: bei Übereinstimmung übernimmt das Tool das Etikett automatisch, bei Unterschieden entscheidet eine dritte Person. Das Ergebnis ist ein verlässlicher „Gold-Standard“.</p>
+        <p class="lead">Du brauchst keine Ahnung vom Programmieren. Alles läuft in deinem Browser, offline, ohne Netz.</p>
+
+        <div class="workflow">
+          <div class="step"><span class="num">①</span><span>Datensatz laden <small class="muted">(claims + pairs)</small></span></div>
+          <span class="arrow">→</span>
+          <div class="step"><span class="num">②</span><span>Labeln <small class="muted">(Rater A und B getrennt!)</small></span></div>
+          <span class="arrow">→</span>
+          <div class="step"><span class="num">③</span><span>Adjudizieren <small class="muted">(beide Exporte vergleichen)</small></span></div>
+          <span class="arrow">→</span>
+          <div class="step"><span class="num">④</span><span>Report <small class="muted">(Kennzahlen + Export)</small></span></div>
+        </div>
+
+        <div class="roles">
+          <div class="role-card">
+            <h4>Wer macht was?</h4>
+            <ul>
+              <li><strong>Rater A</strong> lädt den Datensatz, labelt alle Paare, exportiert sein Ergebnis.</li>
+              <li><strong>Rater B</strong> tut dasselbe — komplett getrennt, am besten anderem Browser/Tab.</li>
+              <li><strong>Adjudikator</strong> lädt beide Exporte im Modus „Adjudizieren“, entscheidet bei Dissens.</li>
+            </ul>
+          </div>
+          <div class="role-card forbidden">
+            <h4>Was du NICHT tun darfst</h4>
+            <ul>
+              <li>Während des Labelns <strong>absprechen</strong> oder vergleichen — das verfälscht das Ergebnis.</li>
+              <li>Die <strong>Referenzlabels</strong> (Gold-Standard) ansehen — sonst bist du nicht mehr blind.</li>
+              <li>Mit unterschiedlichem <strong>Seed</strong> arbeiten — dann sehen A und B unterschiedliche Reihenfolgen.</li>
+            </ul>
+          </div>
+        </div>
+        <p class="muted" style="margin-top:12px;font-size:12.5px">Tipp: Klicke auf die kleinen <span class="help-icon">?</span>-Icons neben den Feldern und Buttons — sie erklären jedes Bedienelement in Alltagssprache. Das Glossar unten klärt alle Begriffe.</p>
+      </div>
+    </div>
+
+    <!-- v0.1.3: GLOSSAR (einklappbar) -->
+    <div class="glossary" id="glossaryBox">
+      <div class="glossary-head" id="glossaryToggle">
+        <h2>Glossar — alle Etiketten und Begriffe</h2>
+        <span class="chev">▾</span>
+      </div>
+      <div class="glossary-body">
+        <h3>Die 12 Etiketten (mit Alltagsbeispiel)</h3>
+        <div class="glossary-grid" id="glossaryLabels"></div>
+        <h3>Begriffe kurz erklärt</h3>
+        <div class="glossary-terms" id="glossaryTerms"></div>
+      </div>
+    </div>
+
+    <!-- v0.1.3: Modus-Intro Start -->
+    <div class="mode-intro">
+      <strong>Start.</strong> Hier lädst du die Aussagen (claims) und die Paare (pairs) als JSON-Dateien.
+      <span class="what-now"><strong>Was du brauchst:</strong> <span>zwei JSON-Dateien</span> — oder klicke „Mini-Selbsttest laden“ für zwei Beispielpaare. <strong>Was dann:</strong> <span>Wechsle oben zu „Labeln“.</span></span>
+    </div>
+
+    <div class="panel">
+      <h2>1. Datensatz laden</h2>
+      <p class="muted" style="margin-top:0">Lade <code>claims.json</code> und <code>pairs.json</code> per Datei-Upload oder füge JSON direkt in die Textarea ein. Optional startest du mit dem eingebetteten Mini-Selbsttest (2 Paare).</p>
+      <div class="grid-2">
+        <div>
+          <h3>claims.json <span class="help-icon" data-help-key="fileClaims" title="Was ist das?">?</span></h3>
+          <label class="field"><input type="file" id="fileClaims" accept=".json,application/json"></label>
+          <label class="field" style="margin-top:8px"><textarea id="txtClaims" data-help="txtClaims" placeholder='[{"id":"c1","text":"...","typ":"Fakt", ...}]'></textarea></label>
+        </div>
+        <div>
+          <h3>pairs.json <span class="help-icon" data-help-key="filePairs" title="Was ist das?">?</span></h3>
+          <label class="field"><input type="file" id="filePairs" accept=".json,application/json"></label>
+          <label class="field" style="margin-top:8px"><textarea id="txtPairs" data-help="txtPairs" placeholder='[{"pair_id":"p1","a_id":"c1","b_id":"c2"}]'></textarea></label>
+        </div>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <span class="help-field-row"><button class="btn primary" id="btnLoad">Übernehmen</button><span class="help-icon" data-help-key="btnLoad" title="Was macht dieser Button?">?</span></span>
+        <span class="help-field-row"><button class="btn" id="btnLoadSelf">Mini-Selbsttest laden</button><span class="help-icon" data-help-key="btnLoadSelf" title="Was macht dieser Button?">?</span></span>
+        <span class="help-field-row"><button class="btn" id="btnLoadLast">Letzten Stand wiederherstellen</button><span class="help-icon" data-help-key="btnLoadLast" title="Was macht dieser Button?">?</span></span>
+        <span class="spacer"></span>
+        <span class="muted" id="loadStatus" style="font-size:12px"></span>
+      </div>
+      <div id="importErrors" class="import-errors" style="display:none"></div>
+    </div>
+
+    <div class="panel" id="metaPanel" style="display:none">
+      <h2>Datensatz-Übersicht</h2>
+      <div class="grid-3" id="metaGrid"></div>
+    </div>
+
+    <div class="panel" id="selftestPanel">
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <h2 style="margin:0">Selbsttest (deterministisch)</h2>
+        <div class="row">
+          <span class="muted" id="selftestStatus" style="font-size:12px"></span>
+          <span class="help-field-row"><button class="btn" id="btnSelftest">Selbsttest ausführen</button><span class="help-icon" data-help-key="btnSelftest" title="Was macht dieser Button?">?</span></span>
+        </div>
+      </div>
+      <table class="table" id="selftestTable" style="margin-top:10px">
+        <thead><tr><th>Test</th><th>Resultat</th><th>Detail</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- =================== LABEL-MODUS =================== -->
+  <section id="view-label" style="display:none">
+    <!-- v0.1.3: Modus-Intro Labeln -->
+    <div class="mode-intro">
+      <strong>Labeln.</strong> Hier bewertest du ein Aussagen-Paar nach dem anderen. Der Entscheidungsbaum stellt dir nacheinander einfache Ja/Nein-Fragen; am Ende bekommst du ein passendes Etikett vorgeschlagen.
+      <span class="what-now"><strong>Was du brauchst:</strong> <span>einen geladenen Datensatz</span> (aus „Start“). <strong>Was dann:</strong> <span>Gehe alle Paare durch und exportiere am Ende dein Ergebnis als JSON — das brauchst du für die Adjudikation.</span></span>
+    </div>
+    <div class="panel" id="labelEmpty" style="display:none">
+      <h2>2. Label-Modus</h2>
+      <p class="muted">Kein Datensatz geladen. Bitte zuerst <a href="#" id="goHome">zum Start</a> gehen und claims/pairs laden.</p>
+    </div>
+    <div class="panel" id="labelHead">
+      <h2>2. Label-Modus</h2>
+      <div class="row" style="margin-bottom:10px">
+        <span class="help-field-row" style="align-items:flex-start">
+          <label class="field" style="min-width:160px">
+            <span>Rater-Rolle</span>
+            <select id="raterRole">
+              <option value="A">Rater A</option>
+              <option value="B">Rater B</option>
+            </select>
+          </label>
+          <span class="help-icon" data-help-key="raterRole" title="Was bedeutet das?">?</span>
+        </span>
+        <span class="help-field-row" style="align-items:flex-start">
+          <label class="field" style="min-width:200px">
+            <span>Kürzel (Initialen)</span>
+            <input id="raterInit" placeholder="z.B. jm" maxlength="6">
+          </label>
+          <span class="help-icon" data-help-key="raterInit" title="Was bedeutet das?">?</span>
+        </span>
+        <span class="help-field-row" style="align-items:flex-start">
+          <label class="field" style="min-width:160px">
+            <span>Seed (deterministisch)</span>
+            <input id="seed" value="42" type="number">
+          </label>
+          <span class="help-icon" data-help-key="seed" title="Was bedeutet das?">?</span>
+        </span>
+        <span class="spacer"></span>
+        <span class="muted" id="progText" style="font-family:var(--mono);font-size:12px"></span>
+      </div>
+
+      <div class="grid-2" id="pairCards"></div>
+
+      <div class="row" style="margin-top:14px;justify-content:space-between">
+        <div class="row">
+          <span class="help-field-row"><button class="btn" id="btnPrev">← Zurück</button><span class="help-icon" data-help-key="btnPrev" title="Was macht dieser Button?">?</span></span>
+          <span class="help-field-row"><button class="btn primary" id="btnNext">Weiter →</button><span class="help-icon" data-help-key="btnNext" title="Was macht dieser Button?">?</span></span>
+        </div>
+        <div class="row">
+          <span class="help-field-row"><button class="btn" id="btnJump">Springen…</button><span class="help-icon" data-help-key="btnJump" title="Was macht dieser Button?">?</span></span>
+          <span class="help-field-row"><button class="btn" id="btnExport">Export JSON</button><span class="help-icon" data-help-key="btnExport" title="Was macht dieser Button?">?</span></span>
+          <span class="help-field-row"><label class="btn" style="display:inline-flex;align-items:center;gap:6px">Laden <input type="file" id="fileLoadSession" accept=".json" style="display:none"></label><span class="help-icon" data-help-key="fileLoadSession" title="Was macht das?">?</span></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="wizard" id="wizard">
+      <div class="stephead">
+        <div class="q" id="wizQ">—</div>
+        <div class="muted" id="wizStep" style="font-family:var(--mono);font-size:11px"></div>
+      </div>
+      <div class="progressbar"><div class="fill" id="wizFill"></div></div>
+      <div class="help" id="wizHelp">—</div>
+      <details class="why"><summary>Warum diese Frage?</summary><div id="wizWhy">—</div></details>
+      <div id="wizExample"></div>
+      <div class="choices" id="wizChoices"></div>
+      <div class="actions">
+        <div class="left">
+          <button class="btn" id="wizBack" disabled>← Schritt zurück</button>
+        </div>
+        <div class="right">
+          <button class="btn t3" id="wizT3">Unklar/Kontext fehlt → Tier-3 (T3)</button>
+          <button class="btn warn" id="wizManual">Ich sehe das anders → Label manuell</button>
+        </div>
+      </div>
+
+      <div class="label-preview" id="labelPreview" style="display:none">
+        <div class="lab">Vorgeschlagenes Label</div>
+        <div class="val" id="lpVal">—</div>
+        <div class="desc" id="lpDesc">—</div>
+        <div class="path" id="lpPath">—</div>
+      </div>
+
+      <div class="panel" style="margin-top:14px;background:#0c0f16;border-style:dashed">
+        <h3 style="margin-top:0">Begründung / Beleg (Pflicht) <span class="help-icon" data-help-key="noteField" title="Was gehört hier rein?">?</span></h3>
+        <label class="field">
+          <textarea id="noteField" placeholder="Kurze Begründung, Quellenbeleg, Verweis auf Definition…"></textarea>
+        </label>
+        <div class="row" style="margin-top:8px;justify-content:space-between">
+          <span class="muted" id="noteWarn" style="font-size:12px;color:var(--warn);display:none">Bitte eine Begründung angeben, bevor du speicherst/weitergehst.</span>
+          <span class="spacer"></span>
+          <span class="help-field-row"><span class="help-icon" data-help-key="btnDeleteDecision" title="Was macht dieser Button?">?</span><button class="btn warn" id="btnDeleteDecision" disabled>Entscheidung löschen</button></span>
+          <button class="btn primary" id="btnSavePair">Antwort speichern</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== ADJUDIKATION =================== -->
+  <section id="view-adjudicate" style="display:none">
+    <!-- v0.1.3: Modus-Intro Adjudizieren -->
+    <div class="mode-intro">
+      <strong>Adjudizieren.</strong> Hier vergleichst du die Ergebnisse beider Rater. Gleiche Etiketten werden automatisch übernommen (Konsens); bei verschiedenen entscheidest du als dritte Person oder markierst das Paar als „Tier-3 = unklar“.
+      <span class="what-now"><strong>Was du brauchst:</strong> <span>zwei exportierte JSON-Dateien</span> — eine von Rater A, eine von Rater B. <strong>Was dann:</strong> <span>Gehe zu „Report“, um die Kennzahlen und den fertigen Gold-Standard zu exportieren.</span></span>
+    </div>
+    <div class="panel">
+      <h2>3. Adjudikation / Merge</h2>
+      <p class="muted" style="margin-top:0">Lade die Export-JSON-Dateien zweier Rater. Konsens = gleiches Label → Gold-Label übernommen. Dissens → Differenz-Knoten anzeigen, dritte Stimme oder Tier-3 setzen.</p>
+      <div class="grid-2">
+        <div>
+          <h3>Rater 1 (z.B. A) <span class="help-icon" data-help-key="fileR1" title="Was gehört hier hin?">?</span></h3>
+          <label class="field"><input type="file" id="fileR1" accept=".json"></label>
+          <label class="field" style="margin-top:8px"><textarea id="txtR1" data-help="txtR1" placeholder='JSON-Export von Rater 1 hier einfügen…'></textarea></label>
+        </div>
+        <div>
+          <h3>Rater 2 (z.B. B) <span class="help-icon" data-help-key="fileR2" title="Was gehört hier hin?">?</span></h3>
+          <label class="field"><input type="file" id="fileR2" accept=".json"></label>
+          <label class="field" style="margin-top:8px"><textarea id="txtR2" data-help="txtR2" placeholder='JSON-Export von Rater 2 hier einfügen…'></textarea></label>
+        </div>
+      </div>
+      <div class="row" style="margin-top:12px">
+        <span class="help-field-row"><button class="btn primary" id="btnAdjudicate">Adjudizieren</button><span class="help-icon" data-help-key="btnAdjudicate" title="Was macht dieser Button?">?</span></span>
+        <span class="spacer"></span>
+        <span class="muted" id="adjStatus" style="font-size:12px"></span>
+      </div>
+    </div>
+
+    <div class="panel" id="adjList" style="display:none">
+      <div class="row" style="justify-content:space-between;align-items:center;margin-bottom:8px">
+        <h2 style="margin:0">Adjudikations-Liste</h2>
+        <div class="row">
+          <span class="muted" id="adjCounts" style="font-size:12px"></span>
+          <button class="btn" id="btnAdjExportPairs">Export pairs.json (score-kompatibel)</button>
+          <button class="btn" id="btnAdjExportSession">Export session.json (voll)</button>
+          <button class="btn" id="btnAdjExportMD">Export labeling-report.md</button>
+        </div>
+      </div>
+      <table class="table" id="adjTable">
+        <thead><tr>
+          <th>pair_id</th><th>Status</th><th>r1.label</th><th>r2.label</th><th>Divergenz-Knoten</th><th>Gold</th><th>Aktion</th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- =================== REPORT =================== -->
+  <section id="view-report" style="display:none">
+    <!-- v0.1.3: Modus-Intro Report -->
+    <div class="mode-intro">
+      <strong>Report.</strong> Hier siehst du zusammenfassende Kennzahlen: wie viel Konsens/Dissens, wie viele Tier-3, und die Übereinstimmung beider Rater (Cohen's Kappa). Außerdem exportierst du hier den fertigen Gold-Standard.
+      <span class="what-now"><strong>Was du brauchst:</strong> <span>eine fertige Adjudikation</span> (Modus „Adjudizieren“). <strong>Was dann:</strong> <span>Exportiere pairs.json oder session.json als Endergebnis.</span></span>
+    </div>
+    <div class="panel">
+      <h2>4. Report</h2>
+      <p class="muted" style="margin-top:0">Aggregiertes Bild aus Adjudikation. Lade zusätzlich den Datensatz <code>pairs.json</code> (Original), um die Gold-Standard-Datei anreichern zu können.</p>
+      <div class="row">
+        <span class="help-field-row"><label class="btn" style="display:inline-flex;align-items:center;gap:6px">Original pairs.json laden <input type="file" id="fileOrigPairs" accept=".json" style="display:none"></label><span class="help-icon" data-help-key="fileOrigPairs" title="Wofür ist das?">?</span></span>
+        <span class="help-field-row"><button class="btn" id="btnReportReload">Aus localStorage neu laden</button><span class="help-icon" data-help-key="btnReportReload" title="Was macht dieser Button?">?</span></span>
+        <span class="spacer"></span>
+        <span class="muted" id="reportStatus" style="font-size:12px"></span>
+      </div>
+    </div>
+    <div id="reportBody"></div>
+  </section>
+
+</div>
+
+<!-- =================== Manual-Override Modal =================== -->
+<div class="modal-bg" id="modalManual">
+  <div class="modal">
+    <h3>Label manuell setzen</h3>
+    <p class="muted" style="font-size:12.5px">Du verlässt den Entscheidungsbaum-Pfad. Eine Begründung ist Pflicht.</p>
+    <label class="field"><span>Label</span>
+      <div class="radio-list" id="manualLabels">
+        <!-- filled by JS -->
+      </div>
+    </label>
+    <label class="field" style="margin-top:10px"><span>Begründung (Pflicht)</span>
+      <textarea id="manualNote" placeholder="Warum weichst du vom Pfad ab?"></textarea>
+    </label>
+    <div class="row" style="justify-content:flex-end;margin-top:14px">
+      <button class="btn" id="manualCancel">Abbrechen</button>
+      <button class="btn primary" id="manualOk">Übernehmen</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ====================================================================
+   Galadox-Label — Single-File Deterministic Gold-Standard Builder
+   Offline, no network, no external resources. All state is local.
+   ==================================================================== */
+
+/* ---- v0.1.2 Changelog ----
+   Fix 1: Schema-Validierung beim Import (validateDataset, Fehlerliste, Abbruch bei harten Fehlern).
+   Fix 2: Concurrent-Lock via localStorage-Heartbeat (Read-Only-Banner, saveLocal-No-op bei Fremd-Lock).
+   Fix 3: Tier-3-Wiedervorlage in der Adjudikation (Reopen-Button setzt status=dissent, tier3=false).
+   Fix 4: "Entscheidung löschen" im Label-Modus (kontrolliertes Undo mit confirm).
+   Fix 5: MANUAL→<label> Prefix in allen Pfad-Strings (kein "MANUAL:manual" mehr).
+*/
+
+/* ---- v0.1.3 Changelog ----
+   v0.1.3: Verständlichkeits-Update, keine Logik-Änderungen.
+   - Onboarding-Panel (5 Sätze Alltagssprache, Workflow ①②③④, Rollen), einklappbar, Zustand in localStorage.
+   - Help-Icons (?) als <span> NEBEN Bedienelementen (nie in <button>/<label>), document-Delegation.
+   - Modus-Intros: Box oben in jeder der 4 Ansichten.
+   - Glossar: 12 Labels mit Alltagsbeispiel + 8 Begriffe (Rater, Gold, Konsens, Adjudikation, T3, κ, Seed, Blindheit).
+   - Wizard: example/examples-Felder für F1–F6 und alle Blätter (defensiv, escapeHtml).
+   - "Was tun?"-Hinweise in Fehlermeldungen (Render-only, Fehler-Objekte und Abbruchlogik unangetastet).
+   Keine Änderung an: validateDataset, acquireLock/releaseLock, detShuffle/mulberry32, adjudicate,
+   cohensKappa, persistDecision, Export-Funktionen/-Formate, STORE_KEY, LOCK_KEY, Label-Set.
+*/
+
+/* ---------- Konfiguration & Konstanten ---------- */
+const LABEL_SET = ["E","S-K","S-Z","S-D","N","O","W","Q","P","K","-","T3"];
+
+const LABEL_TEXT = {
+  "E":   "E — Widerspruch (exklusiv): Beide können nicht zugleich wahr sein, einander logisch ausschließend.",
+  "S-K": "S-K — Skopus-Konflikt: Verschiedener Gegenstand/Person/Korpus.",
+  "S-Z": "S-Z — Skopus-Zeit-Konflikt: Gleicher Gegenstand, anderer Zeitraum/Prognosehorizont.",
+  "S-D": "S-D — Skopus-Definition: Gleicher Gegenstand & Zeitraum, aber unterschiedliche Definition der Leitbegriffe.",
+  "N":   "N — Nicht-/Unklarer Claim: Mindestens ein Text ist kein klar überprüfbarer Claim.",
+  "O":   "O — Lücke/Out-of-Scope: Eine systematisch relevante Aussage fehlt im Paar.",
+  "W":   "W — Wiederholung/Paraphrase: Inhaltlich identisch, nur anders formuliert.",
+  "Q":   "Q — Frage statt Aussage: Ein Text stellt primär eine Frage, keine Assertion.",
+  "P":   "P — Prognose-Konflikt: Gleicher Gegenstand, aber unterschiedliche Prognosehorizonte.",
+  "K":   "K — Komplementär/Kontext: Beide ergänzen sich; gemeinsam wahr, ohne Widerspruch.",
+  "-":   "— — Nicht vergleichbar (z.B. Gattungen, Domänen unvereinbar).",
+  "T3":  "T3 — Tier-3: Unklar, Kontext fehlt, keine verlässliche Entscheidung möglich."
+};
+
+/* ---------- v0.1.3: Help-Texte (zentral, id → Erklärtext) ---------- */
+const HELP = {
+  btnLoad: "Liest beide Felder ein und prüft sie. Links gehört die Liste der Aussagen (claims) hin, rechts die Liste der Paare (pairs).",
+  btnLoadSelf: "Lädt zwei Beispiel-Paare, damit du das Tool sofort ausprobieren kannst — ohne eigene Dateien.",
+  btnLoadLast: "Stellt deinen letzten Arbeitsstand aus diesem Browser wieder her (Autosave).",
+  fileClaims: "Datei mit der Liste aller Aussagen (claims.json). Jede Aussage braucht mindestens eine id und einen text.",
+  filePairs: "Datei mit der Liste der Paare (pairs.json). Jedes Paar verbindet zwei Aussagen über ihre IDs (a_id, b_id).",
+  txtClaims: "Füge hier den Inhalt deiner claims.json direkt als Text ein — Alternative zum Datei-Upload.",
+  txtPairs: "Füge hier den Inhalt deiner pairs.json direkt als Text ein — Alternative zum Datei-Upload.",
+  raterRole: "Wer bist du? Rater A labelt zuerst, Rater B unabhängig davon. Beide tun das getrennt, ohne sich abzusprechen.",
+  raterInit: "Deine Initialen (z.B. jm), damit später klar ist, wer welches Urteil abgegeben hat.",
+  seed: "Eine Startzahl für den Zufallsmischer. Gleiche Zahl = gleiche Reihenfolge. Beide Rater müssen dieselbe nehmen (z.B. 42), damit sie dieselben Paare in derselben Reihenfolge sehen.",
+  btnPrev: "Springt zum vorherigen Paar zurück.",
+  btnNext: "Speichert (falls eine Begründung da ist) und geht zum nächsten Paar.",
+  btnJump: "Springt direkt zu einem bestimmten Paar (nach Nummer).",
+  btnExport: "Speichert deinen kompletten Arbeitsstand als Datei. Diese Datei gibst du später bei der Adjudikation ab.",
+  fileLoadSession: "Lädt eine zuvor exportierte Datei und setzt deine Arbeit genau dort fort.",
+  btnSavePair: "Speichert deine Antwort für das aktuelle Paar (Label + Begründung).",
+  btnDeleteDecision: "Entfernt deine Entscheidung für das aktuelle Paar wieder — nach einer Sicherheitsfrage. Der Wizard springt zurück an den Anfang.",
+  noteField: "Kurze Begründung, Quellenbeleg oder Verweis auf die Definition. Pflichtfeld — ohne Begründung lässt sich nicht speichern.",
+  wizBack: "Geht eine Frage im Entscheidungsbaum zurück.",
+  wizT3: "Setzt das Paar auf „Tier-3 = unklar“. Nehme es, wenn dir Informationen oder Kontext fehlen, um sicher zu urteilen.",
+  wizManual: "Für den Fall, dass du ganz anders entscheidest als der Baum vorschlägt. Du musst dich begründen.",
+  fileR1: "Export-Datei von Rater 1 (das JSON, das Rater 1 nach dem Labeln heruntergeladen hat).",
+  fileR2: "Export-Datei von Rater 2 (das JSON, das Rater 2 nach dem Labeln heruntergeladen hat).",
+  txtR1: "Alternativ zum Datei-Upload: Hier den JSON-Text von Rater 1 einfügen.",
+  txtR2: "Alternativ zum Datei-Upload: Hier den JSON-Text von Rater 2 einfügen.",
+  btnAdjudicate: "Vergleicht beide Rater-Exporte: Gleiches Etikett = Konsens, verschiedenes = Dissens.",
+  fileOrigPairs: "Optional: das ursprüngliche pairs.json, um mehr Details an den Report anhängen zu können.",
+  btnReportReload: "Liest den aktuellen Stand neu aus dem Browser-Speicher ein.",
+  btnSelftest: "Prüft das Tool selbst mit festen Testfällen. Sollte immer 6/6 grün zeigen.",
+  btnAdjExportPairs: "Speichert das Ergebnis als pairs.json, das andere Tools (galadox-score) direkt lesen können.",
+  btnAdjExportSession: "Speichert das Ergebnis als vollständige session.json — inkl. Aussagen und Metadaten, zum Archivieren.",
+  btnAdjExportMD: "Speichert einen lesbaren Bericht als Markdown-Datei (fürs Protokoll)."
+};
+
+/* ---------- v0.1.3: Glossar (zentrale Daten) ---------- */
+const GLOSSARY = {
+  labels: {
+    "E":   { def:"Widerspruch — beide Aussagen können nicht zugleich wahr sein.", ex:"„Die Erde ist eine Scheibe“ vs. „Die Erde ist eine Kugel“ — nur eine kann stimmen." },
+    "S-K": { def:"Skopus-Konflikt — verschiedene Gegenstände/Personen/Körper.", ex:"„Müller verdient 5000€“ (Hans Müller) vs. „Müller verdient 5000€“ (Thomas Müller) — verschiedene Personen." },
+    "S-Z": { def:"Skopus-Zeit-Konflikt — gleicher Gegenstand, anderer Zeitraum.", ex:"„Die Rente steigt um 3,7 %“ (Prognose Nov.) vs. „um 4,24 %“ (endgültig März) — kein Widerspruch, andere Zeitpunkte." },
+    "S-D": { def:"Skopus-Definition — gleiche Wörter, aber unterschiedliche Bedeutung.", ex:"„Armut sinkt“ (Einkommensarmut) vs. „Armut steigt“ (Bildungsarmut) — verschiedene Definition von „Arm“." },
+    "N":   { def:"Kein klar überprüfbarer Claim — Meinung, Behauptung ohne Prüfbarkeit.", ex:"„Bildung ist wichtig“ — eine Meinung, lässt sich nicht klar als wahr/falsch testen." },
+    "O":   { def:"Lücke — eine systematisch wichtige Aussage fehlt im Paar.", ex:"„Die Impfung schützt zu 90%“ vs. „Es gab Nebenwirkungen“ — erst mit der dritten Aussage wird es vergleichbar." },
+    "W":   { def:"Wiederholung — beide sagen inhaltlich dasselbe, nur anders formuliert.", ex:"„Berlin hat 3,85 Mio. Einwohner“ vs. „In Berlin leben 3,85 Millionen Menschen“ — identisch." },
+    "Q":   { def:"Frage statt Aussage — ein Text fragt, statt etwas zu behaupten.", ex:"„Steigt die Inflation?“ vs. „Die Inflation steigt um 4 %“ — ersteres ist keine überprüfbare Aussage." },
+    "P":   { def:"Prognose-Konflikt — gleicher Gegenstand, verschiedene Vorhersagehorizonte.", ex:"„2025 sinken die Preise“ vs. „Langfristig steigen sie“ — kurz- vs. langfristig." },
+    "K":   { def:"Komplementär — beide ergänzen sich, gemeinsam wahr, kein Widerspruch.", ex:"„Berlin liegt im Osten“ + „Berlin ist Hauptstadt“ — beides stimmt, schließt sich nicht aus." },
+    "-":   { def:"Nicht vergleichbar — z.B. verschiedene Themenwelten oder Darstellungsarten.", ex:"Ein Gedicht über Liebe vs. eine statistische Tabelle — nicht auf derselben Ebene." },
+    "T3":  { def:"Tier-3 — unklar, Kontext fehlt, keine verlässliche Entscheidung möglich.", ex:"Zwei Fachsätze ohne Fachwissen — du kannst sie nicht sicher beurteilen." }
+  },
+  terms: {
+    rater:        { t:"Rater", d:"Eine Person, die Aussagen-Paare mit Etiketten bewertet. Galadox braucht zwei Rater (A und B), die unabhängig voneinander arbeiten." },
+    goldLabel:    { t:"Gold-Label", d:"Das endgültige Etikett nach dem Vergleich beider Rater. Bei Konsens wird es automatisch übernommen, bei Dissens entscheidet eine dritte Person." },
+    konsens:      { t:"Konsens / Dissens", d:"Konsens = beide Rater haben dasselbe Etikett vergeben. Dissens = verschiedene Etiketten → muss besprochen/entschieden werden." },
+    adjudikation: { t:"Adjudikation", d:"Der Vergleich beider Rater-Ergebnisse und die endgültige Entscheidung bei Dissens. Hier entsteht der Gold-Standard." },
+    tier3:        { t:"Tier-3", d:"Ein Paar, das sich nicht sicher bewerten lässt (zu wenig Kontext). Wird ausgeklammert, kann aber später wieder vorgelegt werden." },
+    cohensKappa:  { t:"Cohen's Kappa (κ)", d:"Eine Zahl zwischen -1 und 1: Wie oft waren sich beide Rater einig, über den reinen Zufall hinaus? 1 = perfekte Übereinstimmung, 0 = Zufall, negativ = seltener als Zufall." },
+    seed:         { t:"Seed", d:"Startzahl für die Zufalls-Reihenfolge der Paare. Gleicher Seed = gleiche Reihenfolge. Beide Rater brauchen denselben Seed, um dieselben Paare in derselten Reihenfolge zu sehen." },
+    blindheit:    { t:"Blindheit", d:"Jeder Rater sieht beim Arbeiten NICHT, was der andere geurteilt hat. Verhindert gegenseitige Beeinflussung. Technisch: durch Trennung der Sessions, nicht durch einen Server erzwungen." }
+  }
+};
+
+/* Entscheidungsbaum (F1..F6) */
+const TREE = {
+  F1: {
+    q: "F1 — Sind beide Texte klare, überprüfbare Claims?",
+    help: "Ein Claim = prüfbare Aussage über Welt-/Domänenzustand. Meinungen ohne Tatsachenkern, reine Appelle, reine Zitate ohne klare Aussage → kein Claim.",
+    why: "Wir brauchen zwei komparable Aussagen. Wenn einer der Texte kein Claim ist, ist eine Beziehung (Widerspruch/Konsistenz/etc.) nicht definierbar.",
+    yes: "F2", no: "LEAF_NWQ",  // N/W/Q/T3 — vom Nutzer zu pflücken
+    example: "„Berlin hat 3,85 Mio. Einwohner“ (prüfbar) vs. „Wir sollten mehr für Bildung tun“ (Meinung, nicht prüfbar) → Nein, der zweite ist kein Claim."
+  },
+  F2: {
+    q: "F2 — Bezieht sich beide Aussagen auf denselben Gegenstand?",
+    help: "Gegenstand = Person, Objekt, Konzept, Datensatz, Organisation etc., worauf sich der Claim bezieht. Verschiedene Entitäten = Skopus-Konflikt.",
+    why: "Wenn A über X und B über Y spricht, ist die Frage „widersprüchlich?“ meist sinnlos.",
+    yes: "F3", no: "LEAF_SKORUNDASH",
+    example: "„Die Arbeitslosigkeit in Deutschland sinkt“ vs. „Die Arbeitslosigkeit in Frankreich steigt“ → Nein, verschiedene Länder."
+  },
+  F3: {
+    q: "F3 — Gleicher Zeitraum / Prognosehorizont?",
+    help: "Aussagen über unterschiedliche Zeiträume (z.B. 2019 vs. 2024) oder kurz- vs. langfristige Prognosen sind nicht direkt vergleichbar.",
+    why: "Selber Gegenstand kann zu unterschiedlichen Zeiten Verschiedenes geäußert haben — formal kein Widerspruch.",
+    yes: "F4", no: "LEAF_SZODERP",
+    example: "„Die Rente steigt 2024 um 3,7 %“ vs. „Die Rente stieg 2019 um 3,2 %“ → Nein, verschiedene Jahre."
+  },
+  F4: {
+    q: "F4 — Gleiche Definition der Leitbegriffe?",
+    help: "Werden Schlüsselbegriffe (z.B. „Inflation“, „Armut“, „Freiheit“, „KI“) synonym oder substanziell unterschiedlich verwendet?",
+    why: "Häufige Widerspruchs-Simulation: Definitionsdrift. Gleiche Wörter, anderes Konzept.",
+    yes: "F5", no: "LEAF_SD",
+    example: "„Armut sinkt“ (im Sinn von Einkommensarmut) vs. „Armut steigt“ (im Sinn von Bildungsarmut) → Nein, verschiedene Definitionen."
+  },
+  F5: {
+    q: "F5 — Können beide gleichzeitig wahr sein?",
+    help: "Logische Verträglichkeit. Wenn A und B sich gegenseitig ausschließen, ist nur einer wahr.",
+    why: "Wenn nein → echter exklusiver Widerspruch E. Wenn ja, prüfen wir auf Lücke O.",
+    yes: "F6", no: "LEAF_E",
+    example: "„Die Sonne geht im Osten auf“ vs. „Die Sonne geht im Westen auf“ → Nein, nur eine kann stimmen (Widerspruch E)."
+  },
+  F6: {
+    q: "F6 — Fehlt systematisch eine relevante Aussage?",
+    help: "Manche Paare ergeben erst Sinn mit einer dritten Aussage (z.B. Bedingung, Vergleichswert, Gegeninstanz).",
+    why: "Wenn eine solche Lücke systematisch ist, kennzeichnen wir das als Out-of-Scope / Lücke.",
+    yes: "LEAF_O", no: "LEAF_KNWSK",
+    example: "„Die Impfung schützt zu 90 %“ vs. „Es gab Nebenwirkungen“ → Ja, ohne Kontext (wie schwer? wie oft?) fehlt eine relevante Aussage."
+  }
+};
+
+/* Terminale Blätter: Mehrere erlaubte Optionen */
+const LEAF_OPTIONS = {
+  LEAF_NWQ:        { label: "F1 → Nein",  options: ["N","W","Q","T3"], final: true, desc: "Mindestens ein Text ist kein klarer Claim oder doppelt.",
+    examples: {
+      "N":  "„Bildung ist wichtig“ — eine Meinung, nicht prüfbar.",
+      "W":  "„Berlin hat 3,85 Mio. Einwohner“ vs. „In Berlin leben 3,85 Millionen Menschen“ — dasselbe, nur umformuliert.",
+      "Q":  "„Steigt die Inflation?“ — eine Frage, keine Aussage.",
+      "T3": "Ein Fachsatz, bei dem dir das Fachwissen fehlt, um zu urteilen."
+    } },
+  LEAF_SKORUNDASH: { label: "F2 → Nein",  options: ["-","S-K","T3"],   final: true, desc: "Verschiedene Gegenstände oder Domänen.",
+    examples: {
+      "-":   "Ein Gedicht über Liebe vs. eine statistische Tabelle zur Inflation — nicht auf derselben Ebene.",
+      "S-K": "„Müller verdient 5000€“ (Hans Müller) vs. „Müller verdient 5000€“ (Thomas Müller) — verschiedene Personen.",
+      "T3":  "Zwei Aussagen, bei denen du nicht sicher sagen kannst, ob sie denselben Gegenstand haben."
+    } },
+  LEAF_SZODERP:    { label: "F3 → Nein",  options: ["S-Z","P","T3"],   final: true, desc: "Zeitraum oder Prognosehorizont weicht ab.",
+    examples: {
+      "S-Z": "„Die Rente steigt um 3,7 %“ (Prognose Nov.) vs. „um 4,24 %“ (endgültig März) — andere Zeitpunkte.",
+      "P":   "„2025 sinken die Preise“ vs. „Langfristig steigen sie“ — kurz- vs. langfristig.",
+      "T3":  "Zeitraum ist unklar oder nicht angegeben."
+    } },
+  LEAF_SD:         { label: "F4 → Nein",  options: ["S-D","T3"],       final: true, desc: "Definitionsdrift der Leitbegriffe.",
+    examples: {
+      "S-D": "„Armut sinkt“ (Einkommensarmut) vs. „Armut steigt“ (Bildungsarmut) — verschiedene Definition.",
+      "T3":  "Du bist unsicher, ob die Begriffe gleich oder verschieden verwendet werden."
+    } },
+  LEAF_E:          { label: "F5 → Nein",  options: ["E","T3"],         final: true, desc: "Exklusiver Widerspruch.",
+    examples: {
+      "E":  "„Die Erde ist eine Scheibe“ vs. „Die Erde ist eine Kugel“ — nur eine kann stimmen.",
+      "T3": "Die Aussagen scheinen sich zu widersprechen, aber du bist nicht sicher genug."
+    } },
+  LEAF_O:          { label: "F6 → Ja",    options: ["O","T3"],         final: true, desc: "Relevante Aussage fehlt im Paar.",
+    examples: {
+      "O":  "„Die Impfung schützt zu 90 %“ vs. „Es gab Nebenwirkungen“ — erst mit mehr Kontext vergleichbar.",
+      "T3": "Du vermutest eine Lücke, bist aber unsicher, ob sie systematisch ist."
+    } },
+  LEAF_KNWSK:      { label: "F6 → Nein",  options: ["K","N","W","S-K","-","T3"], final: true, desc: "Verträglich / komplementär / paraphrastisch.",
+    examples: {
+      "K":   "„Berlin liegt im Osten“ + „Berlin ist Hauptstadt“ — beides stimmt, kein Widerspruch.",
+      "N":   "Einer der Texte ist keine klare Aussage.",
+      "W":   "Beide sagen inhaltlich dasselbe.",
+      "S-K": "Trotz Verträglichkeit: verschiedene Gegenstände.",
+      "-":   "Nicht auf derselben Ebene vergleichbar.",
+      "T3":  "Du bist unsicher, welche der Optionen passt."
+    } }
+};
+
+const TREE_ORDER = ["F1","F2","F3","F4","F5","F6"];
+
+/* ---------- Deterministischer PRNG (Mulberry32) ---------- */
+function mulberry32(seed){
+  let a = (seed >>> 0) || 1;
+  return function(){
+    a |= 0; a = (a + 0x6D2B79F5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function detShuffle(arr, seed){
+  const a = arr.slice();
+  const rnd = mulberry32(seed);
+  for (let i = a.length - 1; i > 0; i--){
+    const j = Math.floor(rnd() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ---------- App-State ---------- */
+const STORE_KEY = "galadox-label.v0.1";
+const LOCK_KEY  = "galadox-label.v0.1.lock";
+const state = {
+  claims: [],
+  pairs: [],
+  claimsById: {},
+  // session
+  mode: "home",
+  rater: { role: "A", init: "" },
+  seed: 42,
+  // order of pair_ids (deterministically shuffled)
+  order: [],
+  cursor: 0,
+  // path/answers map: pair_id -> { answers: [{step, ans, leaf?}], label, manual, note, ts, rater, role, init }
+  decisions: {},
+  // adjudication
+  adj: null
+};
+
+/* ---------- Storage ---------- */
+function saveLocal(){
+  if (_readOnly) return; // Fix 2: Read-Only-Modus → keine Persistenz
+  try{
+    const dump = {
+      v: 1,
+      savedAt: new Date().toISOString(),
+      claims: state.claims,
+      pairs: state.pairs,
+      rater: state.rater,
+      seed: state.seed,
+      order: state.order,
+      cursor: state.cursor,
+      decisions: state.decisions,
+      adj: state.adj
+    };
+    localStorage.setItem(STORE_KEY, JSON.stringify(dump));
+    setTopMeta("autosave " + new Date().toLocaleTimeString());
+  }catch(e){
+    console.error("saveLocal", e);
+  }
+}
+function loadLocal(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return false;
+    const d = JSON.parse(raw);
+    state.claims = d.claims || [];
+    state.pairs = d.pairs || [];
+    state.claimsById = Object.fromEntries(state.claims.map(c => [c.id, c]));
+    state.rater = d.rater || state.rater;
+    state.seed = d.seed || state.seed;
+    state.order = d.order || [];
+    state.cursor = d.cursor || 0;
+    state.decisions = d.decisions || {};
+    state.adj = d.adj || null;
+    return true;
+  }catch(e){ console.error("loadLocal",e); return false; }
+}
+function resetLocal(){
+  localStorage.removeItem(STORE_KEY);
+}
+
+/* ---------- Utils ---------- */
+function $(sel, root=document){ return root.querySelector(sel); }
+function $$(sel, root=document){ return Array.from(root.querySelectorAll(sel)); }
+function toast(msg, err=false){
+  const t = $("#toast");
+  t.textContent = msg;
+  t.classList.toggle("err", err);
+  t.classList.add("show");
+  clearTimeout(t._h);
+  t._h = setTimeout(()=>t.classList.remove("show"), 2500);
+}
+function setTopMeta(s){ $("#topMeta").textContent = s; }
+function escapeHtml(s){
+  return String(s == null ? "" : s)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+}
+function nowIso(){ return new Date().toISOString(); }
+
+/* Fix 5: einheitlicher Pfad-String pro Answer — manuelle Overrides als "MANUAL→<label>" */
+function pathEntry(a){
+  if (a && a.via === "manual") return "MANUAL→" + (a.finalLabel || "");
+  return (a.step||"") + (a.ans?":"+a.ans:"") + (a.finalLabel?("→"+a.finalLabel):"");
+}
+
+/* Fix 2: Concurrent-Lock (Tab-Lock via localStorage-Heartbeat) */
+const LOCK_TTL = 15000, LOCK_BEAT = 5000;
+let _tabId = null, _lockTimer = null, _readOnly = false;
+function lockState(){
+  try{ const raw = localStorage.getItem(LOCK_KEY); if (!raw) return null; return JSON.parse(raw); }catch(e){ return null; }
+}
+function setReadOnly(ro){
+  if (ro === _readOnly) return;
+  _readOnly = ro;
+  const b = $("#readonlyBanner"); if (b) b.style.display = ro ? "" : "none";
+}
+function isReadOnly(){ return _readOnly; }
+function assertWritable(){ if (_readOnly){ toast("Nur-Lesen-Modus: eine andere Sitzung ist aktiv", true); return false; } return true; }
+function acquireLock(){
+  const now = Date.now();
+  const cur = lockState();
+  if (cur && cur.tabId !== _tabId && (now - cur.ts) < LOCK_TTL){
+    setReadOnly(true);
+    return false;
+  }
+  _tabId = _tabId || ("t" + Date.now().toString(36) + Math.random().toString(36).slice(2,6));
+  localStorage.setItem(LOCK_KEY, JSON.stringify({tabId:_tabId, ts:now}));
+  setReadOnly(false);
+  if (_lockTimer) clearInterval(_lockTimer);
+  _lockTimer = setInterval(()=>{
+    const c = lockState();
+    if (c && c.tabId !== _tabId && (Date.now()-c.ts) < LOCK_TTL){ setReadOnly(true); }
+    else { localStorage.setItem(LOCK_KEY, JSON.stringify({tabId:_tabId, ts:Date.now()})); setReadOnly(false); }
+  }, LOCK_BEAT);
+  return true;
+}
+function releaseLock(){
+  if (_lockTimer){ clearInterval(_lockTimer); _lockTimer = null; }
+  const c = lockState();
+  if (c && c.tabId === _tabId){ try{ localStorage.removeItem(LOCK_KEY); }catch(e){} }
+}
+
+/* ---------- Self-Test-Set ---------- */
+const SELF_TEST = {
+  claims: [
+    { id:"c1", text:"Berlin hat 3.850.000 Einwohnerinnen und Einwohner (Stand 31.12.2023).", typ:"Fakt", "träger":"Statistik Berlin-Brandenburg", quelle:"Pressemitteilung 12/2024", url:"https://example.org/c1", datum:"2024-01-15", gegenstand:"Berlin / Einwohnerzahl", zeitraum:"2023", definition:"Amtliche Einwohnerzahl mit Hauptwohnsitz" },
+    { id:"c2", text:"Berlin zählt im Jahr 2023 rund 3,85 Millionen Menschen mit Hauptwohnsitz.", typ:"Fakt", "träger":"Statistik Berlin-Brandenburg", quelle:"Pressemitteilung 12/2024", url:"https://example.org/c2", datum:"2024-01-15", gegenstand:"Berlin / Einwohnerzahl", zeitraum:"2023", definition:"Amtliche Einwohnerzahl mit Hauptwohnsitz" },
+    { id:"c3", text:"München ist die bevölkerungsreichste Stadt Deutschlands.", typ:"Fakt", "träger":"Bundesinstitut für Bau-, Stadt- und Raumforschung", quelle:"Laufende Raumbeobachtung", url:"https://example.org/c3", datum:"2022-06-01", gegenstand:"Bevölkerungsreichste Stadt Deutschlands", zeitraum:"2021", definition:"Einwohner mit Hauptwohnsitz, Stichtag 31.12." },
+    { id:"c4", text:"Hamburg wird Berlin als bevölkerungsreichste Stadt Deutschlands im Jahr 2030 ablösen.", typ:"Prognose", "träger":"HWWI", quelle:"HWWI-Kurzbericht 2024", url:"https://example.org/c4", datum:"2024-09-10", gegenstand:"Bevölkerungsreichste Stadt Deutschlands", zeitraum:"2030 (Prognosehorizont)", definition:"Modellbasierte Prognose, Hauptwohnsitz" }
+  ],
+  pairs: [
+    { pair_id:"st1", a_id:"c1", b_id:"c2" },
+    { pair_id:"st2", a_id:"c3", b_id:"c4" }
+  ]
+};
+
+/* ---------- Loading ---------- */
+/* Fix 1: Schema-Validierung — harte Fehler brechen Import ab (state unverändert) */
+const CLAIM_FIELDS = new Set(["id","text","typ","träger","traeger","quelle","url","datum","gegenstand","zeitraum","definition"]);
+const PAIR_FIELDS  = new Set(["pair_id","a_id","b_id"]);
+
+function validateDataset(claims, pairs){
+  const errors = [], warnings = [];
+  if (!Array.isArray(claims)){ errors.push({typ:"claim", id:"—", feld:"claims", meldung:"claims ist kein Array"}); return {errors,warnings}; }
+  if (!Array.isArray(pairs)){  errors.push({typ:"pair",  id:"—", feld:"pairs",  meldung:"pairs ist kein Array"});  return {errors,warnings}; }
+  const claimIds = new Set();
+  for (const c of claims){
+    const cid = c && c.id != null ? String(c.id) : null;
+    if (!c || c.id == null || c.id === "") errors.push({typ:"claim", id: cid||"—", feld:"id", meldung:"Claim ohne id"});
+    else if (claimIds.has(c.id)) errors.push({typ:"claim", id: cid, feld:"id", meldung:"Doppelte claim-id: "+cid});
+    else claimIds.add(c.id);
+    if (!c || typeof c.text !== "string") errors.push({typ:"claim", id: cid||"—", feld:"text", meldung:"Claim ohne text (string)"});
+    if (c) for (const k of Object.keys(c)){ if (!CLAIM_FIELDS.has(k)) warnings.push({typ:"claim", id: cid||"—", feld:k, meldung:"Unbekanntes Feld"}); }
+  }
+  const pairIds = new Set();
+  for (const p of pairs){
+    const pid = p && p.pair_id != null ? String(p.pair_id) : null;
+    if (!p || p.pair_id == null || p.pair_id === "") errors.push({typ:"pair", id: pid||"—", feld:"pair_id", meldung:"Pair ohne pair_id"});
+    else if (pairIds.has(p.pair_id)) errors.push({typ:"pair", id: pid, feld:"pair_id", meldung:"Doppelte pair_id: "+pid});
+    else pairIds.add(p.pair_id);
+    if (!p || p.a_id == null || p.a_id === "") errors.push({typ:"pair", id: pid||"—", feld:"a_id", meldung:"Pair ohne a_id"});
+    if (!p || p.b_id == null || p.b_id === "") errors.push({typ:"pair", id: pid||"—", feld:"b_id", meldung:"Pair ohne b_id"});
+    if (p && p.a_id != null && p.a_id !== "" && !claimIds.has(p.a_id)) errors.push({typ:"pair", id: pid||"—", feld:"a_id", meldung:"a_id '"+p.a_id+"' nicht in claims"});
+    if (p && p.b_id != null && p.b_id !== "" && !claimIds.has(p.b_id)) errors.push({typ:"pair", id: pid||"—", feld:"b_id", meldung:"b_id '"+p.b_id+"' nicht in claims"});
+    if (p) for (const k of Object.keys(p)){ if (!PAIR_FIELDS.has(k)) warnings.push({typ:"pair", id: pid||"—", feld:k, meldung:"Unbekanntes Feld"}); }
+  }
+  return {errors, warnings};
+}
+function validateSessionDecisions(decisions){
+  const errs = [];
+  if (!decisions) return errs;
+  for (const pid of Object.keys(decisions)){
+    const d = decisions[pid];
+    if (d && d.label != null && !LABEL_SET.includes(d.label)){
+      errs.push({typ:"pair", id: pid, feld:"decision.label", meldung:"Label '"+d.label+"' nicht im Label-Set"});
+    }
+  }
+  return errs;
+}
+/* v0.1.3: "Was tun?"-Hinweise pro Feldname (nur für die Anzeige — Fehler-Objekte und Abbruchlogik unangetastet) */
+const ERR_HINTS = {
+  "id":             "Diesem Objekt fehlt eine eindeutige ID (oder sie ist leer). Jede Aussage braucht ein eindeutiges Feld \"id\".",
+  "text":           "Der Text der Aussage fehlt oder ist keine Zeichenkette. Trage unter \"text\" den eigentlichen Aussagesatz ein.",
+  "pair_id":        "Diesem Paar fehlt eine pair_id. Jedes Paar braucht ein eindeutiges Feld \"pair_id\".",
+  "a_id":           "Das Paar verweist auf eine Aussage-ID (a_id), die es in der claims-Liste nicht gibt. Tippfehler in der ID prüfen oder die fehlende Aussage ergänzen.",
+  "b_id":           "Das Paar verweist auf eine Aussage-ID (b_id), die es in der claims-Liste nicht gibt. Tippfehler in der ID prüfen oder die fehlende Aussage ergänzen.",
+  "decision.label": "Das gespeicherte Etikett gehört nicht zum erlaubten 12er-Label-Set (E, S-K, S-Z, S-D, N, O, W, Q, P, K, -, T3). Alte/fehlerhafte Session — neu labeln oder korrigieren.",
+  "claims":         "Das Feld \"claims\" ist kein Array (Liste). Es muss eine Liste von Aussagen-Objekten sein, z.B. [{\"id\":\"c1\",...}].",
+  "pairs":          "Das Feld \"pairs\" ist kein Array (Liste). Es muss eine Liste von Paar-Objekten sein, z.B. [{\"pair_id\":\"p1\",...}]."
+};
+function showImportResult(res){
+  const box = $("#importErrors");
+  if (!res.errors.length){
+    box.style.display = "none"; box.innerHTML = "";
+    if (res.warnings.length) toast("Import ok · "+res.warnings.length+" Warnung(en) zu unbekannten Feldern");
+    return true;
+  }
+  const shown = res.errors.slice(0,20).map(e => {
+    const hint = ERR_HINTS[e.feld] ? `<span class="err-hint">${escapeHtml(ERR_HINTS[e.feld])}</span>` : "";
+    return `<li>${escapeHtml(e.id)} · ${escapeHtml(e.feld)}: ${escapeHtml(e.meldung)}${hint}</li>`;
+  }).join("");
+  const more = res.errors.length>20 ? `<li class="muted">… und ${res.errors.length-20} weitere</li>` : "";
+  box.style.display = "";
+  box.innerHTML = `<strong>${res.errors.length} Fehler beim Import (Import abgebrochen, state unverändert):</strong><ul>${shown}${more}</ul>`;
+  toast("Import abgelehnt · "+res.errors.length+" Fehler", true);
+  return false;
+}
+
+function ingestClaims(claims){
+  if (!Array.isArray(claims)) throw new Error("claims.json: erwartet ein Array");
+  // lightweight validation
+  for (const c of claims){
+    if (!c.id || typeof c.text !== "string") throw new Error("Claim ohne id/text: " + JSON.stringify(c).slice(0,80));
+  }
+  state.claims = claims;
+  state.claimsById = Object.fromEntries(claims.map(c => [c.id, c]));
+}
+function ingestPairs(pairs){
+  if (!Array.isArray(pairs)) throw new Error("pairs.json: erwartet ein Array");
+  for (const p of pairs){
+    if (!p.pair_id || !p.a_id || !p.b_id) throw new Error("Pair ohne pair_id/a_id/b_id: " + JSON.stringify(p).slice(0,80));
+  }
+  state.pairs = pairs;
+  // build deterministic order
+  state.order = detShuffle(pairs.map(p => p.pair_id), state.seed);
+  state.cursor = 0;
+  state.decisions = {};
+}
+function loadFromTextareas(){
+  const c = $("#txtClaims").value.trim();
+  const p = $("#txtPairs").value.trim();
+  if (!c || !p) throw new Error("Bitte beide Textareas füllen oder Datei hochladen.");
+  const claims = JSON.parse(c), pairs = JSON.parse(p);
+  if (!showImportResult(validateDataset(claims, pairs))) return false; // Fix 1: state unverändert bei Fehlern
+  ingestClaims(claims);
+  ingestPairs(pairs);
+  return true;
+}
+function loadFromFiles(fileClaims, filePairs, cb){
+  let cJson = null, pJson = null, done = 0;
+  function check(){
+    done++;
+    if (done === 2) {
+      try{
+        if (!showImportResult(validateDataset(cJson, pJson))){ cb(new Error("Import abgelehnt")); return; } // Fix 1
+        ingestClaims(cJson);
+        ingestPairs(pJson);
+        cb(null);
+      }catch(e){ cb(e); }
+    }
+  }
+  const r1 = new FileReader(); r1.onload = e => { try{ cJson = JSON.parse(e.target.result); }catch(err){ cb(err); return; } check(); };
+  r1.readAsText(fileClaims);
+  const r2 = new FileReader(); r2.onload = e => { try{ pJson = JSON.parse(e.target.result); }catch(err){ cb(err); return; } check(); };
+  r2.readAsText(filePairs);
+}
+function renderMeta(){
+  const m = $("#metaPanel");
+  if (state.pairs.length === 0){ m.style.display = "none"; return; }
+  m.style.display = "";
+  const nClaims = state.claims.length;
+  const nPairs  = state.pairs.length;
+  const decided = Object.values(state.decisions).filter(d => d && d.label).length;
+  $("#metaGrid").innerHTML = `
+    <div class="kpi"><div class="v">${nClaims}</div><div class="l">Claims geladen</div></div>
+    <div class="kpi"><div class="v">${nPairs}</div><div class="l">Paare geladen</div></div>
+    <div class="kpi"><div class="v">${decided}/${nPairs}</div><div class="l">Labels gesetzt</div></div>
+  `;
+}
+
+/* ---------- Mode switching ---------- */
+function setMode(m){
+  state.mode = m;
+  $$("#modebar button").forEach(b => b.classList.toggle("active", b.dataset.mode === m));
+  for (const v of ["home","label","adjudicate","report"]) $("#view-"+v).style.display = (v===m ? "" : "none");
+  if (m === "label"){ renderLabelScreen(); }
+  if (m === "adjudicate"){ renderAdjudication(); }
+  if (m === "report"){ renderReport(); }
+  if (m === "home"){ renderMeta(); }
+}
+
+/* ===========================================================
+   LABEL-MODUS
+   =========================================================== */
+function currentPair(){
+  if (state.order.length === 0) return null;
+  const pid = state.order[state.cursor];
+  const def = state.pairs.find(p => p.pair_id === pid);
+  return def || null;
+}
+function chip(label, val){
+  if (val == null || val === "") return "";
+  return `<span class="chip"><strong>${escapeHtml(label)}:</strong> ${escapeHtml(val)}</span>`;
+}
+function claimCard(side, claim){
+  if (!claim) return `<div class="claim-card ${side}"><div class="head"><span class="tag">${side.toUpperCase()}</span></div><div class="text muted">— Claim ${escapeHtml(side)} fehlt —</div></div>`;
+  return `
+    <div class="claim-card ${side}">
+      <div class="head"><span class="tag">${side.toUpperCase()} · ${escapeHtml(claim.id)}</span><span class="muted" style="font-size:11px">${escapeHtml(claim.typ || "")}</span></div>
+      <div class="text">„${escapeHtml(claim.text)}“</div>
+      <div class="chips">
+        ${chip("träger", claim["träger"] ?? claim.traeger)}
+        ${chip("quelle", claim.quelle)}
+        ${chip("datum", claim.datum)}
+        ${chip("gegenstand", claim.gegenstand)}
+        ${chip("zeitraum", claim.zeitraum)}
+        ${chip("definition", claim.definition)}
+      </div>
+    </div>`;
+}
+
+function renderPairCards(){
+  const p = currentPair();
+  if (!p){ $("#pairCards").innerHTML = `<div class="muted">Kein Paar verfügbar. Lade einen Datensatz im Startbildschirm.</div>`; return; }
+  const a = state.claimsById[p.a_id];
+  const b = state.claimsById[p.b_id];
+  $("#pairCards").innerHTML = claimCard("a", a) + claimCard("b", b);
+  $("#progText").textContent = `Paar ${state.cursor+1} / ${state.order.length}  ·  ${p.pair_id}`;
+}
+
+/* Wizard / Decision Tree */
+let wizard = {
+  step: "F1",       // current step key
+  answers: [],      // [{step, ans:"yes"|"no"|"label", via:"wizard"|"t3"|"manual", leafKey?, finalLabel?}]
+  currentNode: "F1" // either step key or leaf key
+};
+
+function startWizardForCurrent(){
+  wizard = { step:"F1", answers:[], currentNode:"F1" };
+  // restore existing decision if any
+  const p = currentPair(); if (!p) return;
+  const d = state.decisions[p.pair_id];
+  if (d && d.answers && d.answers.length){
+    // only restore wizard state if it ended on a non-final node (i.e. not a leaf)
+    const last = d.answers[d.answers.length-1];
+    wizard.answers = d.answers.slice();
+    if (last && last.leafKey){ wizard.currentNode = last.leafKey; wizard.step = null; }
+    else { wizard.step = last.step; wizard.currentNode = last.step; }
+  }
+  $("#noteField").value = (d && d.note) || "";
+  renderWizard();
+  updateLabelPreview();
+  updateDeleteButton(); // Fix 4
+}
+function updateDeleteButton(){ // Fix 4
+  const p = currentPair();
+  const btn = $("#btnDeleteDecision");
+  if (btn) btn.disabled = !(p && state.decisions[p.pair_id]);
+}
+function renderWizard(){
+  const node = wizard.currentNode;
+  // leaf?
+  if (LEAF_OPTIONS[node]){
+    renderLeaf(node);
+    return;
+  }
+  // step
+  const step = TREE[node];
+  $("#wizQ").textContent = step.q;
+  $("#wizHelp").textContent = step.help;
+  $("#wizWhy").textContent = step.why;
+  $("#wizStep").textContent = `Schritt ${TREE_ORDER.indexOf(node)+1}/${TREE_ORDER.length} · ${node}`;
+  // fill
+  const idx = TREE_ORDER.indexOf(node);
+  $("#wizFill").style.width = (((idx+1)/TREE_ORDER.length)*100) + "%";
+  // choices
+  const yesLabel = step.yes.startsWith("LEAF_") ? "Ja → Blatt" : "Ja → " + step.yes;
+  const noLabel  = step.no.startsWith("LEAF_")  ? "Nein → Blatt" : "Nein → " + step.no;
+  $("#wizChoices").className = "choices";
+  $("#wizChoices").innerHTML = `
+    <button data-ans="yes" class="a"><span class="lab">JA</span>${escapeHtml(yesLabel)}<br><span class="muted" style="font-size:11.5px">${escapeHtml(yesSubhint(node))}</span></button>
+    <button data-ans="no"  class="b"><span class="lab">NEIN</span>${escapeHtml(noLabel)}<br><span class="muted" style="font-size:11.5px">${escapeHtml(noSubhint(node))}</span></button>
+  `;
+  // back
+  $("#wizBack").disabled = wizard.answers.length === 0;
+  // hide label preview until leaf
+  $("#labelPreview").style.display = "none";
+  // wizard mode classes (highlight a vs b sides)
+  const cl = $("#wizard"); cl.classList.remove("mode-final");
+  // v0.1.3: Alltagsbeispiel anzeigen (defensiv — nur falls example existiert)
+  const ex = $("#wizExample");
+  if (ex) ex.innerHTML = step.example ? `<div class="example-box"><span class="lab">Alltagsbeispiel</span>${escapeHtml(step.example)}</div>` : "";
+}
+function yesSubhint(step){
+  switch(step){
+    case "F1": return "Beide sind prüfbare Aussagen über Welt-/Domänen­zustand.";
+    case "F2": return "Selber Gegenstand, Person, Datensatz, Konzept.";
+    case "F3": return "Selber Berichts- oder Prognose­zeitraum.";
+    case "F4": return "Leitbegriffe werden substanziell gleich verwendet.";
+    case "F5": return "Beide Aussagen sind logisch verträglich.";
+    case "F6": return "Das Paar wirkt vollständig, keine Lücke.";
+  }
+  return "";
+}
+function noSubhint(step){
+  switch(step){
+    case "F1": return "Einer ist Meinung/Frage/unklar → N/W/Q/T3.";
+    case "F2": return "Verschiedene Gegenstände/Domänen → -/S-K/T3.";
+    case "F3": return "Unterschiedlicher Zeitraum/Horizont → S-Z/P/T3.";
+    case "F4": return "Begriffsdrift erkennbar → S-D/T3.";
+    case "F5": return "Exklusiver Widerspruch → E/T3.";
+    case "F6": return "Systematische Lücke → O/T3.";
+  }
+  return "";
+}
+
+function renderLeaf(leafKey){
+  const leaf = LEAF_OPTIONS[leafKey];
+  $("#wizQ").textContent = "Pfad-Ende: " + leaf.label;
+  $("#wizHelp").textContent = "Wähle das passende finale Label aus den erlaubten Optionen für diesen Pfad:";
+  $("#wizWhy").textContent = leaf.desc;
+  $("#wizStep").textContent = "Abschluss";
+  $("#wizFill").style.width = "100%";
+  $("#wizChoices").className = "choices single";
+  $("#wizChoices").innerHTML = leaf.options.map(opt => `
+    <button data-final="${opt}">
+      <span class="lab">${escapeHtml(opt)} · ${escapeHtml(LABEL_TEXT[opt].split(" — ")[0])}</span>
+      ${escapeHtml(LABEL_TEXT[opt])}
+    </button>
+  `).join("");
+  $("#wizBack").disabled = wizard.answers.length === 0;
+  // v0.1.3: Alltagsbeispiele pro erlaubtem Label anzeigen (defensiv — nur falls examples existiert)
+  const ex = $("#wizExample");
+  if (ex){
+    if (leaf.examples){
+      const items = leaf.options.filter(o => leaf.examples[o]).map(o =>
+        `<div class="ex-item"><span class="l">${escapeHtml(o)}:</span> ${escapeHtml(leaf.examples[o])}</div>`
+      ).join("");
+      ex.innerHTML = items ? `<div class="example-box"><span class="lab">Alltagsbeispiele zu den Optionen</span>${items}</div>` : "";
+    } else { ex.innerHTML = ""; }
+  }
+}
+
+function answerWizard(ans){
+  const node = wizard.currentNode;
+  if (LEAF_OPTIONS[node]) return; // shouldn't happen
+  const step = TREE[node];
+  const next = ans === "yes" ? step.yes : step.no;
+  wizard.answers.push({ step: node, ans });
+  if (next.startsWith("LEAF_")){
+    wizard.currentNode = next;
+    // record leaf
+    wizard.answers[wizard.answers.length-1].leafKey = next;
+    renderWizard();
+  } else {
+    wizard.currentNode = next;
+    renderWizard();
+  }
+}
+function finalizeLeaf(label){
+  const p = currentPair(); if (!p) return;
+  const last = wizard.answers[wizard.answers.length-1];
+  if (last) last.finalLabel = label;
+  updateLabelPreview(); // zeigt Label auch vor dem Persistieren (Wizard-Fallback)
+  const note = $("#noteField").value.trim();
+  if (!note){
+    // Note ist Pflicht: KEIN Speichern und KEIN Auto-Advance
+    $("#noteField").classList.add("required-missing");
+    $("#noteWarn").style.display = "";
+    const nf = $("#noteField"); if (nf) nf.focus();
+    toast("Bitte zuerst Begründung eingeben", true);
+    return;
+  }
+  $("#noteField").classList.remove("required-missing");
+  $("#noteWarn").style.display = "none";
+  persistDecision();
+  toast("Label gesetzt: " + label);
+  // move to next pair automatically after short delay
+  setTimeout(() => { if (state.cursor < state.order.length - 1){ state.cursor++; startWizardForCurrent(); renderPairCards(); saveLocal(); } }, 600);
+}
+function persistDecision(){
+  if (!assertWritable()) return; // Fix 2
+  const p = currentPair(); if (!p) return;
+  const note = $("#noteField").value.trim();
+  const last = wizard.answers[wizard.answers.length-1];
+  const label = (last && last.finalLabel) || (wizard.answers.find(a => a.finalLabel) || {}).finalLabel || null;
+  const d = state.decisions[p.pair_id] || {};
+  d.rater = state.rater.role;
+  d.init  = state.rater.init;
+  d.answers = wizard.answers.slice();
+  d.label = label;
+  d.manual = wizard.answers.some(a => a.via === "manual");
+  d.note = note;
+  d.ts = nowIso();
+  state.decisions[p.pair_id] = d;
+  saveLocal();
+  renderMeta();
+  if (window._onDecisionChanged) window._onDecisionChanged();
+}
+function updateLabelPreview(){
+  const p = currentPair(); if (!p) return;
+  const d = state.decisions[p.pair_id];
+  const lab = d && d.label;
+  const lp = $("#labelPreview");
+  if (!lab){ lp.style.display = "none"; return; }
+  lp.style.display = "";
+  $("#lpVal").textContent = lab + " — " + LABEL_TEXT[lab].split(" — ")[0].slice(2).trim();
+  $("#lpDesc").textContent = LABEL_TEXT[lab];
+  $("#lpPath").textContent = "Pfad: " + (d.answers||[]).map(a => pathEntry(a)).join("  →  "); // Fix 5
+}
+
+function renderLabelScreen(){
+  const empty = state.pairs.length === 0;
+  // Leerzustand vs. Arbeits-Oberfläche umschalten — niemals innerHTML überschreiben (zerstört sonst #wizard)
+  $("#labelEmpty").style.display = empty ? "" : "none";
+  $("#labelHead").style.display  = empty ? "none" : "";
+  $("#wizard").style.display     = empty ? "none" : "";
+  if (empty){
+    const gh = $("#goHome"); if (gh) gh.onclick = e => { e.preventDefault(); setMode("home"); };
+    return;
+  }
+  // re-bind header controls
+  $("#raterRole").value = state.rater.role;
+  $("#raterInit").value = state.rater.init || "";
+  $("#seed").value = state.seed;
+  renderPairCards();
+  startWizardForCurrent();
+}
+
+/* ---------- Event wiring ---------- */
+function wireEvents(){
+  // modebar
+  $$("#modebar button").forEach(b => b.addEventListener("click", () => setMode(b.dataset.mode)));
+
+  // file inputs -> textareas (just fill the textarea; actual parsing on "Übernehmen")
+  function bindFile(inputId, taId){
+    $("#"+inputId).addEventListener("change", e => {
+      const f = e.target.files[0]; if (!f) return;
+      const r = new FileReader();
+      r.onload = ev => { $("#"+taId).value = ev.target.result; };
+      r.readAsText(f);
+    });
+  }
+  bindFile("fileClaims","txtClaims");
+  bindFile("filePairs","txtPairs");
+  bindFile("fileR1","txtR1");
+  bindFile("fileR2","txtR2");
+  bindFile("fileLoadSession","_skip");
+  $("#fileLoadSession").addEventListener("change", e => {
+    const f = e.target.files[0]; if (!f) return;
+    if (!assertWritable()) return; // Fix 2
+    const r = new FileReader();
+    r.onload = ev => {
+      try{
+        const d = JSON.parse(ev.target.result);
+        // Fix 1: erst validieren, dann committen (state unverändert bei Fehlern)
+        const claims = d.claims || state.claims;
+        const pairs  = d.pairs  || state.pairs;
+        const dsErr  = validateDataset(claims, pairs);
+        const decErr = validateSessionDecisions(d.decisions);
+        const res = { errors: dsErr.errors.concat(decErr), warnings: dsErr.warnings };
+        if (!showImportResult(res)) return;
+        if (d.claims) state.claims = d.claims;
+        if (d.pairs)  state.pairs  = d.pairs;
+        state.claimsById = Object.fromEntries(state.claims.map(c => [c.id,c]));
+        if (d.rater) state.rater = d.rater;
+        if (typeof d.seed === "number") state.seed = d.seed;
+        if (Array.isArray(d.order) && d.order.length){
+          state.order = d.order;
+        } else {
+          state.order = detShuffle(state.pairs.map(p => p.pair_id), state.seed);
+        }
+        if (typeof d.cursor === "number") state.cursor = d.cursor;
+        if (d.decisions) state.decisions = d.decisions;
+        if (d.adj) state.adj = d.adj;
+        saveLocal();
+        toast("Session geladen · " + state.pairs.length + " Paare");
+        setTopMeta("Session geladen");
+        renderMeta();
+        if (state.mode === "label"){ renderLabelScreen(); }
+        if (state.mode === "adjudicate"){ renderAdjudication(); }
+        if (state.mode === "report"){ renderReport(); }
+      }catch(err){ toast("Session-Import fehlgeschlagen: " + err.message, true); }
+    };
+    r.readAsText(f);
+  });
+  $("#fileOrigPairs").addEventListener("change", e => {
+    const f = e.target.files[0]; if (!f) return;
+    const r = new FileReader();
+    r.onload = ev => {
+      try{
+        const p = JSON.parse(ev.target.result);
+        state.origPairs = p;
+        toast("Original pairs.json geladen ("+p.length+" Paare)");
+        renderReport();
+      }catch(err){ toast("Konnte pairs.json nicht lesen: " + err.message, true); }
+    };
+    r.readAsText(f);
+  });
+
+  // load buttons
+  $("#btnLoad").addEventListener("click", () => {
+    if (!assertWritable()) return; // Fix 2
+    try{
+      if (loadFromTextareas() === false) return; // Fix 1: Import abgelehnt
+      saveLocal();
+      toast("Datensatz geladen · " + state.pairs.length + " Paare");
+      setTopMeta(state.pairs.length + " Paare · " + state.claims.length + " Claims");
+      renderMeta();
+    }catch(e){ toast("Fehler: " + e.message, true); }
+  });
+  $("#btnLoadSelf").addEventListener("click", () => {
+    if (!assertWritable()) return; // Fix 2
+    try{
+      const res = validateDataset(SELF_TEST.claims, SELF_TEST.pairs); // Fix 1
+      if (!showImportResult(res)) return;
+      ingestClaims(SELF_TEST.claims);
+      ingestPairs(SELF_TEST.pairs);
+      saveLocal();
+      toast("Mini-Selbsttest geladen (2 Paare)");
+      setTopMeta("Selbsttest · 2 Paare");
+      renderMeta();
+    }catch(e){ toast("Fehler: " + e.message, true); }
+  });
+  $("#btnLoadLast").addEventListener("click", () => {
+    if (loadLocal()){
+      toast("Letzter Stand wiederhergestellt");
+      setTopMeta("Letzter Stand · " + state.pairs.length + " Paare");
+      renderMeta();
+    } else {
+      toast("Kein gespeicherter Stand gefunden", true);
+    }
+  });
+
+  // rater + seed change
+  $("#raterRole").addEventListener("change", e => { state.rater.role = e.target.value; saveLocal(); });
+  $("#raterInit").addEventListener("input",  e => { state.rater.init = e.target.value.trim(); saveLocal(); });
+  $("#seed").addEventListener("change",     e => {
+    const v = parseInt(e.target.value, 10);
+    if (isNaN(v)) return;
+    const n = Object.keys(state.decisions).length;
+    if (n > 0 && !confirm("Achtung: Alle " + n + " Entscheidungen gehen verloren. Trotzdem neuen Seed setzen?")){
+      e.target.value = state.seed; // alten Seed wiederherstellen
+      return;
+    }
+    state.seed = v;
+    state.order = detShuffle(state.pairs.map(p => p.pair_id), state.seed);
+    state.cursor = 0;
+    state.decisions = {};
+    saveLocal();
+    renderLabelScreen();
+    toast("Seed=" + v + " · neue deterministische Reihenfolge");
+  });
+
+  // nav
+  $("#btnPrev").addEventListener("click", () => {
+    if (state.cursor > 0){ state.cursor--; saveLocal(); startWizardForCurrent(); renderPairCards(); }
+  });
+  $("#btnNext").addEventListener("click", () => {
+    const note = $("#noteField").value.trim();
+    if (!note){
+      $("#noteField").classList.add("required-missing");
+      $("#noteWarn").style.display = "";
+      toast("Bitte zuerst Begründung eingeben", true);
+      return;
+    }
+    persistDecision();
+    if (state.cursor < state.order.length - 1){ state.cursor++; startWizardForCurrent(); renderPairCards(); }
+    else { toast("Letztes Paar erreicht"); }
+  });
+  $("#btnJump").addEventListener("click", () => {
+    const inp = prompt("Springe zu Paar-Index (1.." + state.order.length + "):", String(state.cursor+1));
+    if (!inp) return;
+    const n = parseInt(inp, 10);
+    if (isNaN(n) || n < 1 || n > state.order.length){ toast("Ungültiger Index", true); return; }
+    state.cursor = n - 1; saveLocal(); startWizardForCurrent(); renderPairCards();
+  });
+
+  // export session
+  $("#btnExport").addEventListener("click", () => {
+    const dump = {
+      v:1, savedAt: nowIso(),
+      claims: state.claims, pairs: state.pairs,
+      rater: state.rater, seed: state.seed,
+      order: state.order, cursor: state.cursor,
+      decisions: state.decisions, adj: state.adj
+    };
+    const name = `galadox-rater-${state.rater.role}-${(state.rater.init||"x")}-${Date.now()}.json`;
+    downloadBlob(JSON.stringify(dump, null, 2), name, "application/json");
+    toast("Export erstellt: " + name);
+  });
+
+  // wizard
+  $("#wizard").addEventListener("click", e => {
+    const btn = e.target.closest("button"); if (!btn) return;
+    if (btn.dataset.ans){
+      answerWizard(btn.dataset.ans);
+    } else if (btn.dataset.final){
+      finalizeLeaf(btn.dataset.final);
+    }
+  });
+  $("#wizBack").addEventListener("click", () => {
+    if (wizard.answers.length === 0) return;
+    wizard.answers.pop();
+    // recompute current node
+    if (wizard.answers.length === 0){
+      wizard.currentNode = "F1";
+    } else {
+      const last = wizard.answers[wizard.answers.length-1];
+      wizard.currentNode = last.leafKey || last.step;
+    }
+    renderWizard();
+  });
+  $("#wizT3").addEventListener("click", () => {
+    // jump to terminal T3
+    const note = $("#noteField").value.trim();
+    if (!note){
+      $("#noteField").classList.add("required-missing");
+      $("#noteWarn").style.display = "";
+      toast("Bitte zuerst Begründung eingeben", true);
+      return;
+    }
+    // synthesize a minimal path -> T3
+    wizard.answers.push({ step: wizard.currentNode.startsWith("LEAF_") ? "T3" : wizard.currentNode, ans: "t3", via:"t3" });
+    wizard.answers[wizard.answers.length-1].leafKey = "T3-FORCED";
+    wizard.answers[wizard.answers.length-1].finalLabel = "T3";
+    persistDecision();
+    updateLabelPreview();
+    toast("Tier-3 (T3) gesetzt");
+    setTimeout(() => { if (state.cursor < state.order.length - 1){ state.cursor++; startWizardForCurrent(); renderPairCards(); } }, 500);
+  });
+  $("#wizManual").addEventListener("click", () => openManualModal());
+
+  // save pair (button)
+  $("#btnSavePair").addEventListener("click", () => {
+    const note = $("#noteField").value.trim();
+    if (!note){
+      $("#noteField").classList.add("required-missing");
+      $("#noteWarn").style.display = "";
+      toast("Bitte zuerst Begründung eingeben", true);
+      return;
+    }
+    $("#noteField").classList.remove("required-missing");
+    $("#noteWarn").style.display = "none";
+    persistDecision();
+    updateDeleteButton(); // Fix 4
+  });
+  // Fix 4: Entscheidung löschen (kontrolliertes Undo)
+  $("#btnDeleteDecision").addEventListener("click", () => {
+    if (!assertWritable()) return; // Fix 2
+    const p = currentPair(); if (!p) return;
+    if (!state.decisions[p.pair_id]) return;
+    if (!confirm("Entscheidung für " + p.pair_id + " löschen?")) return;
+    delete state.decisions[p.pair_id];
+    wizard = { step:"F1", answers:[], currentNode:"F1" };
+    $("#noteField").value = "";
+    saveLocal(); renderMeta(); renderWizard(); updateLabelPreview(); updateDeleteButton();
+    toast("Entscheidung gelöscht");
+  });
+  $("#noteField").addEventListener("input", () => {
+    $("#noteField").classList.remove("required-missing");
+    $("#noteWarn").style.display = "none";
+  });
+
+  // manual modal
+  const ml = $("#manualLabels");
+  ml.innerHTML = LABEL_SET.map(l => `<label><input type="radio" name="ml" value="${l}"><span>${l} · ${escapeHtml(LABEL_TEXT[l].split(" — ")[0])}</span></label>`).join("");
+  $("#manualCancel").addEventListener("click", () => $("#modalManual").classList.remove("show"));
+  $("#manualOk").addEventListener("click", () => {
+    const sel = ml.querySelector("input:checked");
+    const note = $("#manualNote").value.trim();
+    if (!sel){ toast("Bitte Label wählen", true); return; }
+    if (!note){ toast("Begründung ist Pflicht", true); return; }
+    // record as manual override
+    wizard.answers.push({ step: "MANUAL", ans: "manual", via:"manual", finalLabel: sel.value });
+    $("#noteField").value = note;
+    persistDecision();
+    updateLabelPreview();
+    $("#modalManual").classList.remove("show");
+    $("#manualNote").value = "";
+    toast("Manuelles Label gesetzt: " + sel.value);
+  });
+
+  // adjudication
+  $("#btnAdjudicate").addEventListener("click", () => {
+    try{
+      const a = $("#txtR1").value.trim();
+      const b = $("#txtR2").value.trim();
+      if (!a || !b) throw new Error("Bitte beide Rater-Exporte angeben.");
+      const r1 = JSON.parse(a), r2 = JSON.parse(b);
+      state.adj = adjudicate(r1, r2);
+      state.adj.adj_meta = { adjudicator: null, ts: nowIso() };
+      saveLocal();
+      renderAdjudication();
+      toast("Adjudikation berechnet");
+    }catch(e){ toast("Fehler: " + e.message, true); }
+  });
+  $("#btnAdjExportPairs").addEventListener("click", () => exportScorePairs());
+  $("#btnAdjExportSession").addEventListener("click", () => exportSessionFull());
+  $("#btnAdjExportMD").addEventListener("click", () => exportAdjReport());
+
+  // report
+  $("#btnReportReload").addEventListener("click", () => renderReport());
+
+  // prevent "kein Datensatz" link from breaking
+}
+
+/* ---------- Download helper ---------- */
+function downloadBlob(text, name, mime){
+  const blob = new Blob([text], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 200);
+}
+
+/* ===========================================================
+   ADJUDIKATION
+   =========================================================== */
+function adjudicate(r1, r2){
+  // ensure claims
+  const claims = r1.claims || r2.claims || state.claims;
+  const cById = Object.fromEntries((claims || []).map(c => [c.id, c]));
+  const map1 = r1.decisions || {};
+  const map2 = r2.decisions || {};
+  const pairIds = Array.from(new Set([...Object.keys(map1), ...Object.keys(map2)]));
+  const items = pairIds.map(pid => {
+    const d1 = map1[pid] || null;
+    const d2 = map2[pid] || null;
+    const label1 = d1 ? d1.label : null;
+    const label2 = d2 ? d2.label : null;
+    let status, gold_label=null, tier3=false, divergence=null;
+    if (!d1 || !d2){ status = "incomplete"; }
+    else if (label1 === label2){
+      status = "consensus"; gold_label = label1;
+      // Fix 3: Konsens-T3 muss tier3=true setzen, damit κ-Filter und Report korrekt zählen
+      if (label1 === "T3") tier3 = true;
+    }
+    else {
+      status = "dissent";
+      // find first diverging step (or finalLabel if paths match but finals differ)
+      const a1 = (d1.answers || []).map(a => pathEntry(a)); // Fix 5
+      const a2 = (d2.answers || []).map(a => pathEntry(a)); // Fix 5
+      const max = Math.max(a1.length, a2.length);
+      for (let i=0;i<max;i++){
+        if (a1[i] !== a2[i]){ divergence = { index:i, r1:a1[i]||null, r2:a2[i]||null }; break; }
+      }
+      if (!divergence && label1 !== label2){
+        divergence = { index: Math.max(a1.length, a2.length)-1, r1: a1.at(-1) || label1, r2: a2.at(-1) || label2 };
+      }
+    }
+    return {
+      pair_id: pid,
+      a_id: (state.pairs.find(p => p.pair_id === pid) || {}).a_id || null,
+      b_id: (state.pairs.find(p => p.pair_id === pid) || {}).b_id || null,
+      r1: d1 ? { rater: d1.rater, init: d1.init, label: d1.label, path: (d1.answers||[]).map(a => pathEntry(a)), note: d1.note, ts: d1.ts } : null, // Fix 5
+      r2: d2 ? { rater: d2.rater, init: d2.init, label: d2.label, path: (d2.answers||[]).map(a => pathEntry(a)), note: d2.note, ts: d2.ts } : null, // Fix 5
+      status, gold_label, tier3, divergence,
+      adjudication: null
+    };
+  });
+  return { items, r1_meta: r1.rater, r2_meta: r2.rater, claims };
+}
+
+function renderAdjudication(){
+  if (!state.adj){ $("#adjList").style.display = "none"; $("#adjStatus").textContent = ""; return; }
+  $("#adjList").style.display = "";
+  const items = state.adj.items;
+  const counts = items.reduce((a,i) => (a[i.status]=(a[i.status]||0)+1, a), {});
+  $("#adjStatus").textContent = `${items.length} Paare geladen · ${counts.consensus||0} Konsens · ${counts.dissent||0} Dissens · ${counts.incomplete||0} unvollständig`;
+  $("#adjCounts").textContent = `Konsens ${counts.consensus||0} · Dissens ${counts.dissent||0} · T3 ${items.filter(i=>i.tier3).length} · Gold ${items.filter(i=>i.gold_label).length}`;
+  const tb = $("#adjTable tbody");
+  tb.innerHTML = "";
+  for (const it of items){
+    const tr = document.createElement("tr");
+    const tag = it.status === "consensus"
+      ? `<span class="tag-mini consensus">Konsens</span>`
+      : it.status === "dissent"
+        ? `<span class="tag-mini dissent">Dissens</span>`
+        : `<span class="tag-mini">Unvollst.</span>`;
+    if (it.tier3) tr.innerHTML = `<td>${escapeHtml(it.pair_id)}</td><td>${tag} <span class="tag-mini t3">T3</span></td><td>${escapeHtml(it.r1?.label||"—")}</td><td>${escapeHtml(it.r2?.label||"—")}</td><td>—</td><td>—</td><td><button class="btn warn" data-act="reopen" data-pid="${escapeHtml(it.pair_id)}">Wiedervorlage</button></td>`;
+    else if (it.status === "consensus") tr.innerHTML = `<td>${escapeHtml(it.pair_id)}</td><td>${tag}</td><td>${escapeHtml(it.r1?.label||"—")}</td><td>${escapeHtml(it.r2?.label||"—")}</td><td class="muted">—</td><td><strong>${escapeHtml(it.gold_label||"—")}</strong></td><td class="muted">auto</td>`;
+    else {
+      // dissent: render side-by-side paths with divergence highlight
+      const div = it.divergence || {};
+      const pathCell = `
+        <div class="grid-2" style="gap:6px;font-size:11.5px">
+          <div>
+            <div class="muted" style="font-size:10.5px">Rater 1</div>
+            ${(it.r1?.path||[]).map((p,i) => `<div class="${i===div.index?'divnode a':''}">${escapeHtml(p)}</div>`).join("")}
+          </div>
+          <div>
+            <div class="muted" style="font-size:10.5px">Rater 2</div>
+            ${(it.r2?.path||[]).map((p,i) => `<div class="${i===div.index?'divnode b':''}">${escapeHtml(p)}</div>`).join("")}
+          </div>
+        </div>
+        <div class="muted" style="font-size:10.5px;margin-top:4px">erster abweichender Knoten: <strong>${escapeHtml((div.r1||"—")+"  ↔  "+(div.r2||"—"))}</strong></div>
+      `;
+      const goldCell = it.gold_label ? `<strong>${escapeHtml(it.gold_label)}</strong>` : `<span class="muted">offen</span>`;
+      const action = `
+        <div class="row" style="gap:4px">
+          <select data-pid="${escapeHtml(it.pair_id)}" class="goldSel">
+            <option value="">— Gold setzen —</option>
+            ${LABEL_SET.map(l => `<option value="${l}" ${it.gold_label===l?"selected":""}>${l}</option>`).join("")}
+          </select>
+          <button class="btn t3" data-act="t3" data-pid="${escapeHtml(it.pair_id)}" ${it.tier3?"disabled":""}>T3</button>
+        </div>`;
+      tr.innerHTML = `<td>${escapeHtml(it.pair_id)}</td><td>${tag}</td><td>${escapeHtml(it.r1?.label||"—")}</td><td>${escapeHtml(it.r2?.label||"—")}</td><td>${pathCell}</td><td>${goldCell}</td><td>${action}</td>`;
+    }
+    tb.appendChild(tr);
+  }
+  // wire actions
+  $$(".goldSel", tb).forEach(sel => sel.addEventListener("change", e => {
+    if (!assertWritable()) return; // Fix 2
+    const pid = sel.dataset.pid;
+    const v = sel.value;
+    const it = state.adj.items.find(x => x.pair_id === pid); if (!it) return;
+    it.gold_label = v || null; it.tier3 = false;
+    it.adjudication = { who: state.adj.adj_meta?.adjudicator || "adjudicator", decision: "set_gold", label: v, note: "", ts: nowIso() };
+    saveLocal(); renderAdjudication();
+  }));
+  $$("button[data-act='t3']", tb).forEach(b => b.addEventListener("click", () => {
+    if (!assertWritable()) return; // Fix 2
+    const pid = b.dataset.pid;
+    const it = state.adj.items.find(x => x.pair_id === pid); if (!it) return;
+    it.tier3 = true; it.gold_label = null;
+    it.adjudication = { who: state.adj.adj_meta?.adjudicator || "adjudicator", decision: "tier3", note: "Konsens nicht erzwingbar", ts: nowIso() };
+    saveLocal(); renderAdjudication();
+  }));
+  // Fix 3: Wiedervorlage — T3 zurücknehmen, Paar wieder als Dissens
+  $$("button[data-act='reopen']", tb).forEach(b => b.addEventListener("click", () => {
+    if (!assertWritable()) return; // Fix 2
+    const pid = b.dataset.pid;
+    const it = state.adj.items.find(x => x.pair_id === pid); if (!it) return;
+    it.tier3 = false; it.gold_label = null; it.status = "dissent";
+    it.adjudication = { who: state.adj.adj_meta?.adjudicator || "adjudicator", decision: "reopen", note: "", ts: nowIso() };
+    saveLocal(); renderAdjudication();
+    toast("Paar wiedervorgelegt · Dissens +1");
+  }));
+}
+
+// Fix 1: buildEnrichedPairs — zentrale Hilfsfunktion für beide Export-Modi
+function buildEnrichedPairs(){
+  if (!state.adj) return null;
+  const items = state.adj.items.map(it => {
+    const labels = {
+      r1: it.r1 ? { rater: it.r1.rater, init: it.r1.init, label: it.r1.label, path: it.r1.path, note: it.r1.note, ts: it.r1.ts } : null,
+      r2: it.r2 ? { rater: it.r2.rater, init: it.r2.init, label: it.r2.label, path: it.r2.path, note: it.r2.note, ts: it.r2.ts } : null
+    };
+    return {
+      pair_id: it.pair_id,
+      a_id: it.a_id, b_id: it.b_id,
+      labels,
+      konsens: it.status === "consensus",
+      gold_label: it.gold_label || null,
+      tier3: !!it.tier3,
+      adjudication: it.adjudication || null
+    };
+  });
+  // merge with original pairs if loaded
+  let out = items;
+  if (Array.isArray(state.origPairs) && state.origPairs.length){
+    const map = Object.fromEntries(items.map(i => [i.pair_id, i]));
+    out = state.origPairs.map(p => map[p.pair_id] ? { ...p, ...map[p.pair_id] } : p);
+  }
+  return out;
+}
+
+// Fix 1a: score-kompatibler Export — reine JSON-Liste für galadox-score --gold
+function exportScorePairs(){
+  if (!state.adj) { toast("Keine Adjudikation", true); return; }
+  const out = buildEnrichedPairs();
+  downloadBlob(JSON.stringify(out, null, 2), "pairs.json", "application/json");
+  toast("pairs.json (score-kompatibel) exportiert — " + out.length + " Paare");
+}
+
+// Fix 1b: voller Session-Export — bisheriges Format mit Meta + claims + pairs
+function exportSessionFull(){
+  if (!state.adj) { toast("Keine Adjudikation", true); return; }
+  const out = buildEnrichedPairs();
+  const claims = state.adj.claims || state.claims;
+  const dump = {
+    v:"0.1", generated_at: nowIso(),
+    r1_meta: state.adj.r1_meta, r2_meta: state.adj.r2_meta,
+    claims, pairs: out
+  };
+  downloadBlob(JSON.stringify(dump, null, 2), "session.json", "application/json");
+  toast("session.json (voll) exportiert");
+}
+function exportAdjReport(){
+  if (!state.adj) { toast("Keine Adjudikation", true); return; }
+  const items = state.adj.items;
+  const n = items.length;
+  const cons = items.filter(i => i.status === "consensus");
+  const dis  = items.filter(i => i.status === "dissent");
+  const t3   = items.filter(i => i.tier3);
+  const gold = items.filter(i => i.gold_label);
+  // Cohen's Kappa on non-T3, non-incomplete (Fix 3: hardened against label=="T3")
+  const usable = items.filter(i => i.r1 && i.r2 && !i.tier3 && i.r1.label !== "T3" && i.r2.label !== "T3");
+  const kappa = cohensKappa(usable.map(i => [i.r1.label, i.r2.label]));
+
+  let md = "";
+  md += `# Galadox-Label · Adjudikations-/Labeling-Report\n\n`;
+  md += `* generiert: ${new Date().toISOString()}\n`;
+  md += `* Rater 1: ${state.adj.r1_meta?.role || "?"} · ${state.adj.r1_meta?.init || "?"}\n`;
+  md += `* Rater 2: ${state.adj.r2_meta?.role || "?"} · ${state.adj.r2_meta?.init || "?"}\n\n`;
+  md += `## Kennzahlen\n\n`;
+  md += `| Metrik | Wert |\n|---|---|\n`;
+  md += `| Paare gesamt | ${n} |\n`;
+  md += `| Konsens | ${cons.length} |\n`;
+  md += `| Dissens | ${dis.length} |\n`;
+  md += `| Tier-3 gesetzt | ${t3.length} |\n`;
+  md += `| Gold-Label gesetzt | ${gold.length} |\n`;
+  md += `| Cohen's κ (Rater 1 ↔ 2, ohne T3) | ${kappa === null ? "n/a" : kappa.toFixed(3)} |\n\n`;
+  md += `## Tier-3-Liste\n\n`;
+  if (t3.length === 0) md += `_(keine)_\n\n`;
+  else {
+    md += `| pair_id | r1.label | r2.label | Begründung |\n|---|---|---|---|\n`;
+    for (const it of t3){
+      md += `| ${it.pair_id} | ${it.r1?.label || "—"} | ${it.r2?.label || "—"} | ${escapeMd((it.adjudication?.note||""))} |\n`;
+    }
+    md += `\n`;
+  }
+  md += `## Dissens-Tabelle (mit Divergenz-Knoten)\n\n`;
+  if (dis.length === 0) md += `_(keine)_\n\n`;
+  else {
+    md += `| pair_id | r1.label | r2.label | Divergenz @ Knoten | r1 → r2 Pfad |\n|---|---|---|---|---|\n`;
+    for (const it of dis){
+      const d = it.divergence || {};
+      const path = (it.r1?.path||[]).join(" → ") + "  ||  " + (it.r2?.path||[]).join(" → ");
+      md += `| ${it.pair_id} | ${it.r1?.label || "—"} | ${it.r2?.label || "—"} | ${escapeMd((d.r1||"—")+"  ↔  "+(d.r2||"—"))} | ${escapeMd(path)} |\n`;
+    }
+    md += `\n`;
+  }
+  md += `## Gold-Standard (Konsens + adjudiziert)\n\n`;
+  md += `| pair_id | gold_label | tier3 | adjudication |\n|---|---|---|---|\n`;
+  for (const it of items){
+    md += `| ${it.pair_id} | ${it.gold_label || "—"} | ${it.tier3 ? "T3" : ""} | ${it.adjudication ? escapeMd(JSON.stringify(it.adjudication)) : ""} |\n`;
+  }
+  md += `\n`;
+  downloadBlob(md, "labeling-report.md", "text/markdown");
+  toast("labeling-report.md exportiert");
+}
+function escapeMd(s){ return String(s||"").replace(/\|/g,"\\|").replace(/\n/g," "); }
+
+/* ===========================================================
+   COHEN'S KAPPA
+   =========================================================== */
+function cohensKappa(pairs){
+  if (!pairs || pairs.length === 0) return null;
+  const labels = Array.from(new Set(pairs.flatMap(p => p)));
+  const N = pairs.length;
+  // observed agreement
+  let po = 0;
+  for (const [a,b] of pairs) if (a===b) po++;
+  po /= N;
+  // Fix 2: separate marginal distributions per rater (echtes Cohen's κ, nicht Scott's π)
+  const counts1 = Object.fromEntries(labels.map(l => [l, 0]));
+  const counts2 = Object.fromEntries(labels.map(l => [l, 0]));
+  for (const [a,b] of pairs){ counts1[a]++; counts2[b]++; }
+  let pe = 0;
+  for (const l of labels){
+    pe += (counts1[l] / N) * (counts2[l] / N);
+  }
+  if (pe === 1) return 1; // perfect baseline; no disagreement possible
+  return (po - pe) / (1 - pe);
+}
+
+/* ===========================================================
+   REPORT
+   =========================================================== */
+function renderReport(){
+  const body = $("#reportBody");
+  body.innerHTML = "";
+  if (!state.adj){
+    body.innerHTML = `<div class="panel"><p class="muted">Noch keine Adjudikation. Wechsle in den <a href="#" id="goAdj">Adjudikations-Modus</a>.</p></div>`;
+    $("#goAdj").onclick = e => { e.preventDefault(); setMode("adjudicate"); };
+    return;
+  }
+  const items = state.adj.items;
+  const n = items.length;
+  const cons = items.filter(i => i.status === "consensus");
+  const dis  = items.filter(i => i.status === "dissent");
+  const t3   = items.filter(i => i.tier3);
+  const gold = items.filter(i => i.gold_label);
+  const usable = items.filter(i => i.r1 && i.r2 && !i.tier3 && i.r1.label !== "T3" && i.r2.label !== "T3");
+  const kappa = cohensKappa(usable.map(i => [i.r1.label, i.r2.label]));
+
+  const kpi = `
+    <div class="grid-3" style="margin-top:14px">
+      <div class="kpi"><div class="v">${n}</div><div class="l">Paare</div></div>
+      <div class="kpi"><div class="v">${cons.length}</div><div class="l">Konsens</div></div>
+      <div class="kpi"><div class="v">${dis.length}</div><div class="l">Dissens</div></div>
+      <div class="kpi"><div class="v">${t3.length}</div><div class="l">Tier-3</div></div>
+      <div class="kpi"><div class="v">${gold.length}</div><div class="l">Gold gesetzt</div></div>
+      <div class="kpi"><div class="v">${kappa === null ? "—" : kappa.toFixed(3)}</div><div class="l">Cohen's κ (ohne T3)</div></div>
+    </div>
+  `;
+  let html = `<div class="panel">${kpi}</div>`;
+
+  // Tier-3 list
+  html += `<div class="panel"><h2>Tier-3-Liste</h2>`;
+  if (t3.length === 0) html += `<p class="muted">Keine Tier-3-Paare.</p>`;
+  else html += `<table class="table"><thead><tr><th>pair_id</th><th>r1.label</th><th>r2.label</th><th>Adjudikation</th></tr></thead><tbody>`+
+    t3.map(i => `<tr><td>${escapeHtml(i.pair_id)}</td><td>${escapeHtml(i.r1?.label||"—")}</td><td>${escapeHtml(i.r2?.label||"—")}</td><td>${i.adjudication?escapeHtml(JSON.stringify(i.adjudication)):"<span class='muted'>—</span>"}</td></tr>`).join("") + `</tbody></table>`;
+  html += `</div>`;
+
+  // Dissent table
+  html += `<div class="panel"><h2>Dissens-Tabelle (mit Divergenz-Knoten)</h2>`;
+  if (dis.length === 0) html += `<p class="muted">Keine Dissens-Paare.</p>`;
+  else html += `<table class="table"><thead><tr><th>pair_id</th><th>r1</th><th>r2</th><th>Divergenz-Knoten</th><th>gold</th></tr></thead><tbody>`+
+    dis.map(i => {
+      const d = i.divergence || {};
+      return `<tr>
+        <td>${escapeHtml(i.pair_id)}</td>
+        <td><span class="tag-mini">${escapeHtml(i.r1?.label||"—")}</span></td>
+        <td><span class="tag-mini">${escapeHtml(i.r2?.label||"—")}</span></td>
+        <td><div class="divnode a">${escapeHtml(d.r1||"—")}</div><div class="divnode b" style="margin-top:3px">${escapeHtml(d.r2||"—")}</div></td>
+        <td>${i.gold_label ? `<strong>${escapeHtml(i.gold_label)}</strong>` : (i.tier3?`<span class="tag-mini t3">T3</span>`:`<span class="muted">offen</span>`)}</td>
+      </tr>`;
+    }).join("") + `</tbody></table>`;
+  html += `</div>`;
+  body.innerHTML = html;
+}
+
+/* ---------- Manual override modal ---------- */
+function openManualModal(){
+  $("#modalManual").classList.add("show");
+}
+
+/* ---------- Init ---------- */
+/* ---------- Selbsttest (deterministisch) ---------- */
+function runSelfTests(){
+  const rows = [];
+  const rec = (name, pass, detail) => rows.push({name, pass, detail: pass ? "ok" : (detail || "fail")});
+  // Baseline: detShuffle seed=42 Referenz
+  try{
+    const r = detShuffle(["p1","p2","p3","p4","p5"], 42).join(",");
+    rec("detShuffle seed=42 Referenz", r === "p1,p5,p3,p2,p4", "got: " + r);
+  }catch(e){ rec("detShuffle seed=42 Referenz", false, e.message); }
+  // Fix 1: Import lehnt b_id 'c99' ab (Validator ist rein, Import-Flow bricht ab)
+  try{
+    const res = validateDataset([{id:"c1",text:"x"}],[{pair_id:"px",a_id:"c1",b_id:"c99"}]);
+    const hit = res.errors.some(e => e.id === "px" && e.feld === "b_id" && /c99/.test(e.meldung));
+    rec("Fix1: Validator lehnt b_id c99 ab (Import würde abbrechen)", hit && res.errors.length > 0, "errors=" + res.errors.map(e => e.feld).join(","));
+  }catch(e){ rec("Fix1: schema validation", false, e.message); }
+  // Fix 2: Fremd-Lock sperrt, alter Lock wird übernommen
+  try{
+    localStorage.setItem(LOCK_KEY, JSON.stringify({tabId:"foreign", ts:Date.now()}));
+    acquireLock();
+    const roFresh = isReadOnly();
+    localStorage.removeItem(LOCK_KEY);
+    localStorage.setItem(LOCK_KEY, JSON.stringify({tabId:"foreign", ts:Date.now()-20000}));
+    acquireLock();
+    const roStale = isReadOnly();
+    rec("Fix2: Fremd-Lock sperrt / alter Lock übernommen", roFresh === true && roStale === false, "fresh=" + roFresh + " stale=" + roStale);
+  }catch(e){ rec("Fix2: lock", false, e.message); }
+  // Fix 3: Reopen setzt dissent, tier3=false, gold=null, decision=reopen
+  try{
+    const it = {pair_id:"t",status:"consensus",gold_label:"T3",tier3:true,r1:{label:"T3"},r2:{label:"T3"},adjudication:null};
+    it.tier3 = false; it.gold_label = null; it.status = "dissent";
+    it.adjudication = {who:"x",decision:"reopen",note:"",ts:nowIso()};
+    rec("Fix3: Reopen → dissent/tier3=false/gold=null", it.status==="dissent" && it.tier3===false && it.gold_label===null && it.adjudication.decision==="reopen", "status=" + it.status);
+  }catch(e){ rec("Fix3: reopen", false, e.message); }
+  // Fix 4: delete entfernt Entscheidung
+  try{
+    const d = {p1:{label:"N",answers:[],note:"x"}};
+    delete d.p1;
+    rec("Fix4: delete entfernt Entscheidung", d.p1 === undefined, "");
+  }catch(e){ rec("Fix4: delete", false, e.message); }
+  // Fix 5: MANUAL→Q (kein ":manual")
+  try{
+    const s = pathEntry({step:"MANUAL",ans:"manual",via:"manual",finalLabel:"Q"});
+    rec("Fix5: MANUAL→Q ohne ':manual'", s === "MANUAL→Q", "got: " + s);
+  }catch(e){ rec("Fix5: MANUAL prefix", false, e.message); }
+  // render
+  const tb = $("#selftestTable tbody");
+  if (tb){
+    tb.innerHTML = rows.map(r => `<tr><td>${escapeHtml(r.name)}</td><td>${r.pass ? '<span class="tag-mini consensus">OK</span>' : '<span class="tag-mini dissent">FAIL</span>'}</td><td class="muted" style="font-family:var(--mono);font-size:11px">${escapeHtml(r.detail)}</td></tr>`).join("");
+  }
+  const npass = rows.filter(r => r.pass).length;
+  const st = $("#selftestStatus"); if (st) st.textContent = npass + "/" + rows.length + " bestanden";
+  toast("Selbsttest: " + npass + "/" + rows.length + " bestanden", npass < rows.length);
+}
+
+function init(){
+  wireEvents();
+  acquireLock(); // Fix 2: Tab-Lock übernehmen oder Read-Only-Modus
+  window.addEventListener("beforeunload", releaseLock); // Fix 2
+  // try to restore last session silently (no toast)
+  if (localStorage.getItem(STORE_KEY)){
+    loadLocal();
+    setTopMeta("Letzter Stand · " + state.pairs.length + " Paare");
+    renderMeta();
+  }
+  setMode("home");
+
+  // global hook for adjudication live-update after persistDecision in label mode
+  window._onDecisionChanged = () => { /* placeholder; could re-render report */ };
+
+  // expose tiny self-test runner (idempotency)
+  // Returns the deterministic order for the given ids + seed.
+  // Empirical reference for seed=42: ["p1","p2","p3","p4","p5"] -> ["p1","p5","p3","p2","p4"]
+  window.galadoxSelfTest = function(ids, seed){
+    seed = (seed == null) ? 42 : seed;
+    return detShuffle(ids, seed);
+  };
+  const sb = $("#btnSelftest"); if (sb) sb.addEventListener("click", runSelfTests); // Selbsttest-Tabelle
+
+  // v0.1.3: Verständlichkeits-Schicht initialisieren
+  renderGlossary();
+  initOnboardingState();
+  initHelpDelegation();
+}
+
+/* v0.1.3: Glossar aus der zentralen Datenstruktur rendern (defensiv, escapeHtml) */
+function renderGlossary(){
+  const labBox = $("#glossaryLabels");
+  if (labBox && GLOSSARY && GLOSSARY.labels){
+    labBox.innerHTML = LABEL_SET.map(key => {
+      const e = GLOSSARY.labels[key];
+      if (!e) return "";
+      return `<div class="glossary-card">
+        <div class="lab">${escapeHtml(key)}</div>
+        <div class="def">${escapeHtml(e.def)}</div>
+        ${e.ex ? `<div class="ex">${escapeHtml(e.ex)}</div>` : ""}
+      </div>`;
+    }).join("");
+  }
+  const termBox = $("#glossaryTerms");
+  if (termBox && GLOSSARY && GLOSSARY.terms){
+    termBox.innerHTML = Object.keys(GLOSSARY.terms).map(k => {
+      const t = GLOSSARY.terms[k];
+      if (!t) return "";
+      return `<div class="glossary-term"><div class="t">${escapeHtml(t.t)}</div><div class="d">${escapeHtml(t.d)}</div></div>`;
+    }).join("");
+  }
+}
+
+/* v0.1.3: Onboarding/Glossar ein-/ausklappen + Zustand in separatem localStorage-Key (try/catch) */
+const ONBOARDING_KEY = "galadox-label.onboarding.dismissed";
+const GLOSSARY_COLLAPSED_KEY = "galadox-label.glossary.collapsed";
+function initOnboardingState(){
+  let dismissed = false;
+  try { dismissed = localStorage.getItem(ONBOARDING_KEY) === "1"; } catch(e){}
+  const ob = $("#onboardingBox");
+  if (ob){ ob.classList.toggle("collapsed", dismissed); }
+  const ot = $("#onboardingToggle");
+  if (ot) ot.addEventListener("click", () => {
+    const box = $("#onboardingBox"); if (!box) return;
+    const nowCollapsed = !box.classList.contains("collapsed");
+    box.classList.toggle("collapsed", nowCollapsed);
+    try { localStorage.setItem(ONBOARDING_KEY, nowCollapsed ? "1" : "0"); } catch(e){}
+  });
+  let glossaryCollapsed = false;
+  try { glossaryCollapsed = localStorage.getItem(GLOSSARY_COLLAPSED_KEY) === "1"; } catch(e){}
+  const gb = $("#glossaryBox");
+  if (gb){ gb.classList.toggle("collapsed", glossaryCollapsed); }
+  const gt = $("#glossaryToggle");
+  if (gt) gt.addEventListener("click", () => {
+    const box = $("#glossaryBox"); if (!box) return;
+    const nowCollapsed = !box.classList.contains("collapsed");
+    box.classList.toggle("collapsed", nowCollapsed);
+    try { localStorage.setItem(GLOSSARY_COLLAPSED_KEY, nowCollapsed ? "1" : "0"); } catch(e){}
+  });
+}
+
+/* v0.1.3: Help-Delegation auf document — fängt data-help-key und data-help ab.
+   - ?-Icons sind <span>, niemals <button>/<label>.
+   - stopPropagation schadet nicht, ist aber nicht der primäre Schutz.
+   - Handler arbeitet auch nach innerHTML-Re Renders, weil auf document delegiert wird. */
+let _helpPopover = null;
+function initHelpDelegation(){
+  _helpPopover = document.createElement("div");
+  _helpPopover.className = "help-popover";
+  document.body.appendChild(_helpPopover);
+  document.addEventListener("click", (ev) => {
+    const t = ev.target.closest("[data-help-key], [data-help]");
+    if (!t) {
+      // Klick außerhalb → Popover schließen
+      if (_helpPopover.classList.contains("show")) _helpPopover.classList.remove("show");
+      return;
+    }
+    const key = t.dataset.helpKey || t.dataset.help || null;
+    const text = key && HELP && HELP[key] ? HELP[key] : null;
+    if (!text) return;
+    ev.stopPropagation();
+    _helpPopover.innerHTML = escapeHtml(text);
+    _helpPopover.classList.add("show");
+    // Position nahe dem Icon (defensiv — falls getBoundingClientRect fehlt)
+    try {
+      const r = t.getBoundingClientRect();
+      const left = Math.min(r.left, window.innerWidth - 300);
+      const top  = r.bottom + 6;
+      _helpPopover.style.left = left + "px";
+      _helpPopover.style.top  = top + "px";
+    } catch(e){
+      _helpPopover.style.left = "50%"; _helpPopover.style.top = "50%";
+    }
+  });
+  // Popover bei Escape oder Scroll schließen
+  document.addEventListener("keydown", (ev) => {
+    if (ev.key === "Escape" && _helpPopover.classList.contains("show")) _helpPopover.classList.remove("show");
+  });
+  window.addEventListener("scroll", () => {
+    if (_helpPopover && _helpPopover.classList.contains("show")) _helpPopover.classList.remove("show");
+  }, true);
+}
+
+/* boot */
+document.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>
