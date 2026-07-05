@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Galadox-Label — Gold-Standard Builder (v0.1.3)</title>
+<title>Galadox-Label — Gold-Standard Builder (v0.1.4)</title>
 <style>
 /* ============ Galadox-Label Design System (offline, no external assets) ============ */
 :root{
@@ -185,6 +185,10 @@ textarea{min-height:90px;resize:vertical;font-family:var(--mono);font-size:12.5p
 .glossary-term{background:#0c0f16;border:1px solid var(--line);border-radius:8px;padding:12px}
 .glossary-term .t{font-size:13px;color:var(--ink);font-weight:600}
 .glossary-term .d{font-size:12.5px;color:var(--ink-dim);margin-top:4px}
+.glossary-rules{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.glossary-rule{background:#0c0f16;border:1px solid var(--line);border-left:3px solid var(--accent-2);border-radius:8px;padding:10px 12px}
+.glossary-rule .rt{font-size:12.5px;color:var(--accent-2);font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+.glossary-rule .rd{font-size:12.5px;color:var(--ink-dim);margin-top:4px;line-height:1.55}
 
 /* Help-Icon (NEBEN Elementen, niemals in <button>/<label>) */
 .help-icon{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:50%;background:var(--panel-2);border:1px solid var(--line);color:var(--ink-dim);font-size:10px;font-weight:700;font-family:var(--sans);cursor:help;margin:0 4px;vertical-align:middle}
@@ -199,6 +203,9 @@ textarea{min-height:90px;resize:vertical;font-family:var(--mono);font-size:12.5p
 .example-box .ex-item{margin-top:6px;padding-top:6px;border-top:1px dashed var(--line)}
 .example-box .ex-item:first-of-type{border-top:none;padding-top:0;margin-top:0}
 .example-box .ex-item .l{font-family:var(--mono);color:var(--accent);font-size:11px;font-weight:700}
+.guide-steps{margin:8px 0 0;padding-left:22px;line-height:1.6;font-size:13.5px}
+.guide-steps li{margin-bottom:6px}
+.guide-steps li strong{color:var(--accent)}
 
 /* "Was tun?"-Hinweis in Fehlermeldungen */
 .err-hint{display:block;color:var(--ink-dim);font-style:italic;margin-top:2px;font-size:11.5px}
@@ -211,7 +218,7 @@ textarea{min-height:90px;resize:vertical;font-family:var(--mono);font-size:12.5p
   <header class="top">
     <div class="brand">
       <div class="mark"></div>
-      <h1>Galadox-Label <small>v0.1.3 · offline</small></h1>
+      <h1>Galadox-Label <small>v0.1.4 · offline</small></h1>
     </div>
     <div class="row">
       <div class="modebar" id="modebar">
@@ -267,6 +274,19 @@ textarea{min-height:90px;resize:vertical;font-family:var(--mono);font-size:12.5p
             </ul>
           </div>
         </div>
+
+        <h3 style="margin-top:16px">Anleitung — Schritt für Schritt</h3>
+        <ol class="guide-steps">
+          <li><strong>Daten einfügen:</strong> Füge oben deine Aussagen (claims) links und die Paare (pairs) rechts ein — als JSON-Text oder per Datei-Upload.</li>
+          <li><strong>Laden:</strong> Klicke „Übernehmen“. Das Tool prüft die Daten und lädt sie.</li>
+          <li><strong>Rolle wählen:</strong> Gib oben an, wer du bist (Rater A oder B) und deine Initialen — der Seed bleibt auf 42.</li>
+          <li><strong>Paar lesen:</strong> Lies die beiden Aussagen nebeneinander und die Kontext-Chips (träger, quelle, datum …).</li>
+          <li><strong>Fragen beantworten:</strong> Klicke dich durch die Ja/Nein-Fragen, bis ein Etikett vorgeschlagen wird.</li>
+          <li><strong>Ergebnis prüfen:</strong> Prüfe das vorgeschlagene Etikett (Code + Klartextname + Begründung) — ändere es nötigenfalls.</li>
+          <li><strong>Weiter zum nächsten Paar:</strong> Gib eine kurze Begründung ein und gehe weiter, bis alle Paare fertig sind.</li>
+          <li><strong>Am Ende exportieren:</strong> Klicke „Export JSON“ und speichere die Datei — sie brauchst du für die Adjudikation.</li>
+        </ol>
+
         <p class="muted" style="margin-top:12px;font-size:12.5px">Tipp: Klicke auf die kleinen <span class="help-icon">?</span>-Icons neben den Feldern und Buttons — sie erklären jedes Bedienelement in Alltagssprache. Das Glossar unten klärt alle Begriffe.</p>
       </div>
     </div>
@@ -282,6 +302,8 @@ textarea{min-height:90px;resize:vertical;font-family:var(--mono);font-size:12.5p
         <div class="glossary-grid" id="glossaryLabels"></div>
         <h3>Begriffe kurz erklärt</h3>
         <div class="glossary-terms" id="glossaryTerms"></div>
+        <h3>Sonderregeln (in einfacher Sprache)</h3>
+        <div class="glossary-rules" id="glossaryRules"></div>
       </div>
     </div>
 
@@ -382,8 +404,8 @@ textarea{min-height:90px;resize:vertical;font-family:var(--mono);font-size:12.5p
 
       <div class="row" style="margin-top:14px;justify-content:space-between">
         <div class="row">
-          <span class="help-field-row"><button class="btn" id="btnPrev">← Zurück</button><span class="help-icon" data-help-key="btnPrev" title="Was macht dieser Button?">?</span></span>
-          <span class="help-field-row"><button class="btn primary" id="btnNext">Weiter →</button><span class="help-icon" data-help-key="btnNext" title="Was macht dieser Button?">?</span></span>
+          <span class="help-field-row"><button class="btn" id="btnPrev">← Zum vorherigen Paar</button><span class="help-icon" data-help-key="btnPrev" title="Was macht dieser Button?">?</span></span>
+          <span class="help-field-row"><button class="btn primary" id="btnNext">Weiter zum nächsten Paar →</button><span class="help-icon" data-help-key="btnNext" title="Was macht dieser Button?">?</span></span>
         </div>
         <div class="row">
           <span class="help-field-row"><button class="btn" id="btnJump">Springen…</button><span class="help-icon" data-help-key="btnJump" title="Was macht dieser Button?">?</span></span>
@@ -553,23 +575,62 @@ textarea{min-height:90px;resize:vertical;font-family:var(--mono);font-size:12.5p
    cohensKappa, persistDecision, Export-Funktionen/-Formate, STORE_KEY, LOCK_KEY, Label-Set.
 */
 
+/* ---- v0.1.4 Changelog ----
+   v0.1.4: Typologie-Korrektur: Erklärtexte an verbindliche Widerspruchstypologie angeglichen,
+   Klartext-Namen (Code + Kurzname in der UI), 7 Sonderregeln im Glossar,
+   Anleitung + einfache Sprache, 2 Tippfehler. NULL Logik-Änderung.
+   - LABEL_TEXT/GLOSSARY an verbindliche Bedeutungen angeglichen (W, Q, N, P, K korrigiert).
+   - "S" in S-K/S-Z/S-D = "scheinbar" (nicht "Skopus") — Texte entsprechend angepasst.
+   - LABEL_NAME-Map für einheitliche Klartext-Namen in der gesamten UI.
+   - Code + Klartext-Name überall (Wizard-Buttons, Ergebnisanzeige, Adjudikation, Report).
+   - 7 Sonderregeln im Glossar (Modalität, F1-Nein-Wegweiser, Präsupposition, Ironie, Rundung, P vs. S-Z, O).
+   - Onboarding: nummerierte Schritt-für-Schritt-Anleitung (8 Schritte, einfache Sprache).
+   - Wizard: Einzeilen-Hinweis + Ergebnis-Zeile ("S-Z, weil ...").
+   - Tippfehler: "derselben"→"derselben"; "Bezieht sich"→"Beziehen sich".
+   Keine Änderung an: LABEL_SET (Codes), validateDataset, Lock-Mechanik, mulberry32/detShuffle,
+   adjudicate, Cohen's Kappa, persistDecision, 4 Exporte, STORE_KEY, LOCK_KEY.
+   In Exporten/localStorage stehen weiterhin NUR die Codes (E, S-K, …).
+*/
+
 /* ---------- Konfiguration & Konstanten ---------- */
 const LABEL_SET = ["E","S-K","S-Z","S-D","N","O","W","Q","P","K","-","T3"];
 
 const LABEL_TEXT = {
-  "E":   "E — Widerspruch (exklusiv): Beide können nicht zugleich wahr sein, einander logisch ausschließend.",
-  "S-K": "S-K — Skopus-Konflikt: Verschiedener Gegenstand/Person/Korpus.",
-  "S-Z": "S-Z — Skopus-Zeit-Konflikt: Gleicher Gegenstand, anderer Zeitraum/Prognosehorizont.",
-  "S-D": "S-D — Skopus-Definition: Gleicher Gegenstand & Zeitraum, aber unterschiedliche Definition der Leitbegriffe.",
-  "N":   "N — Nicht-/Unklarer Claim: Mindestens ein Text ist kein klar überprüfbarer Claim.",
-  "O":   "O — Lücke/Out-of-Scope: Eine systematisch relevante Aussage fehlt im Paar.",
-  "W":   "W — Wiederholung/Paraphrase: Inhaltlich identisch, nur anders formuliert.",
-  "Q":   "Q — Frage statt Aussage: Ein Text stellt primär eine Frage, keine Assertion.",
-  "P":   "P — Prognose-Konflikt: Gleicher Gegenstand, aber unterschiedliche Prognosehorizonte.",
-  "K":   "K — Komplementär/Kontext: Beide ergänzen sich; gemeinsam wahr, ohne Widerspruch.",
-  "-":   "— — Nicht vergleichbar (z.B. Gattungen, Domänen unvereinbar).",
-  "T3":  "T3 — Tier-3: Unklar, Kontext fehlt, keine verlässliche Entscheidung möglich."
+  "E":   "E — Echter Widerspruch: Beide Aussagen können unter gleichem Gegenstand, gleicher Zeit und gleicher Definition nicht zugleich wahr sein.",
+  "S-K": "S-K — Scheinbar, anderer Kontext: Verschiedene Gegenstände, Gruppen, Orte oder Ebenen.",
+  "S-Z": "S-Z — Scheinbar, andere Zeit: Gleiches Thema, aber verschiedene Zeitpunkte.",
+  "S-D": "S-D — Scheinbar, andere Definition: Gleiche Wörter, aber verschiedene Bedeutung.",
+  "N":   "N — Narrativ-Spannung: Eine Aussage passt nicht zur Rolle/Erzählung, die der Akteur von sich beansprucht — kein direkter Claim-Widerspruch, aber ein echter Bruch.",
+  "O":   "O — Auslassung/Lücke: Eine systematisch relevante Aussage fehlt im Paar.",
+  "W":   "W — Wertkonflikt: Kein Streit über Fakten, sondern über Werte oder Prioritäten.",
+  "Q":   "Q — Quellen-/Akteurskonflikt: Der Konflikt liegt in Interessen, Eigentum oder Machtposition der Quellen, nicht primär im Inhalt.",
+  "P":   "P — Prädiktiver Widerspruch: Prognose vs. späterer tatsächlicher Verlauf.",
+  "K":   "K — Konsistenz/Bestätigung: Beide stützen dieselbe Kernaussage, auch bei unterschiedlicher Formulierung. Wiederholungen und Paraphrasen zählen hierher.",
+  "-":   "— — Kein Bezug / nicht vergleichbar.",
+  "T3":  "T3 — Unentscheidbar: Kontext reicht nicht für ein verlässliches Urteil — ehrliches „weiß nicht“, kein Scheitern."
 };
+
+/* v0.1.4: Klartext-Namen je Code (für einheitliche Anzeige in der UI). Exporte enthalten weiterhin nur die Codes. */
+const LABEL_NAME = {
+  "E":   "Echter Widerspruch",
+  "S-K": "Scheinbar – anderer Kontext",
+  "S-Z": "Scheinbar – andere Zeit",
+  "S-D": "Scheinbar – andere Definition",
+  "N":   "Narrativ-Spannung",
+  "O":   "Auslassung/Lücke",
+  "W":   "Wertkonflikt",
+  "Q":   "Quellen-/Akteurskonflikt",
+  "P":   "Prädiktiver Widerspruch",
+  "K":   "Konsistenz/Bestätigung",
+  "-":   "Kein Bezug / nicht vergleichbar",
+  "T3":  "Unentscheidbar"
+};
+/* v0.1.4: Einheitliche Anzeige "Code — Klartextname" in der UI (Codes in Exporten bleiben unverändert). */
+function labelDisplay(code){
+  if (code == null || code === "") return "—";
+  const name = LABEL_NAME[code];
+  return name ? code + " — " + name : String(code);
+}
 
 /* ---------- v0.1.3: Help-Texte (zentral, id → Erklärtext) ---------- */
 const HELP = {
@@ -610,18 +671,18 @@ const HELP = {
 /* ---------- v0.1.3: Glossar (zentrale Daten) ---------- */
 const GLOSSARY = {
   labels: {
-    "E":   { def:"Widerspruch — beide Aussagen können nicht zugleich wahr sein.", ex:"„Die Erde ist eine Scheibe“ vs. „Die Erde ist eine Kugel“ — nur eine kann stimmen." },
-    "S-K": { def:"Skopus-Konflikt — verschiedene Gegenstände/Personen/Körper.", ex:"„Müller verdient 5000€“ (Hans Müller) vs. „Müller verdient 5000€“ (Thomas Müller) — verschiedene Personen." },
-    "S-Z": { def:"Skopus-Zeit-Konflikt — gleicher Gegenstand, anderer Zeitraum.", ex:"„Die Rente steigt um 3,7 %“ (Prognose Nov.) vs. „um 4,24 %“ (endgültig März) — kein Widerspruch, andere Zeitpunkte." },
-    "S-D": { def:"Skopus-Definition — gleiche Wörter, aber unterschiedliche Bedeutung.", ex:"„Armut sinkt“ (Einkommensarmut) vs. „Armut steigt“ (Bildungsarmut) — verschiedene Definition von „Arm“." },
-    "N":   { def:"Kein klar überprüfbarer Claim — Meinung, Behauptung ohne Prüfbarkeit.", ex:"„Bildung ist wichtig“ — eine Meinung, lässt sich nicht klar als wahr/falsch testen." },
-    "O":   { def:"Lücke — eine systematisch wichtige Aussage fehlt im Paar.", ex:"„Die Impfung schützt zu 90%“ vs. „Es gab Nebenwirkungen“ — erst mit der dritten Aussage wird es vergleichbar." },
-    "W":   { def:"Wiederholung — beide sagen inhaltlich dasselbe, nur anders formuliert.", ex:"„Berlin hat 3,85 Mio. Einwohner“ vs. „In Berlin leben 3,85 Millionen Menschen“ — identisch." },
-    "Q":   { def:"Frage statt Aussage — ein Text fragt, statt etwas zu behaupten.", ex:"„Steigt die Inflation?“ vs. „Die Inflation steigt um 4 %“ — ersteres ist keine überprüfbare Aussage." },
-    "P":   { def:"Prognose-Konflikt — gleicher Gegenstand, verschiedene Vorhersagehorizonte.", ex:"„2025 sinken die Preise“ vs. „Langfristig steigen sie“ — kurz- vs. langfristig." },
-    "K":   { def:"Komplementär — beide ergänzen sich, gemeinsam wahr, kein Widerspruch.", ex:"„Berlin liegt im Osten“ + „Berlin ist Hauptstadt“ — beides stimmt, schließt sich nicht aus." },
-    "-":   { def:"Nicht vergleichbar — z.B. verschiedene Themenwelten oder Darstellungsarten.", ex:"Ein Gedicht über Liebe vs. eine statistische Tabelle — nicht auf derselben Ebene." },
-    "T3":  { def:"Tier-3 — unklar, Kontext fehlt, keine verlässliche Entscheidung möglich.", ex:"Zwei Fachsätze ohne Fachwissen — du kannst sie nicht sicher beurteilen." }
+    "E":   { def:"Echter Widerspruch — unter gleichem Gegenstand, gleicher Zeit und gleicher Definition können beide Aussagen nicht zugleich wahr sein.", ex:"„Die Maßnahme kostet 5 Mrd.“ vs. „Die Maßnahme spart 2 Mrd.“" },
+    "S-K": { def:"Scheinbar — anderer Kontext: verschiedene Gegenstände, Gruppen, Orte oder Ebenen. (Das „S“ steht für scheinbar.)", ex:"„Migration entlastet den Arbeitsmarkt“ vs. „Migration belastet Kommunen“ — verschiedene Bezugsgrößen." },
+    "S-Z": { def:"Scheinbar — andere Zeit: gleiches Thema, verschiedene Zeitpunkte.", ex:"„Die Rente steigt um 3,7 %“ (Prognose Nov.) vs. „um 4,24 %“ (endgültig März) — andere Zeitpunkte, kein Widerspruch." },
+    "S-D": { def:"Scheinbar — andere Definition: gleiche Wörter, verschiedene Bedeutung.", ex:"„Armut sinkt“ (Einkommensarmut) vs. „Armut steigt“ (Bildungsarmut) — verschiedene Definition von „Arm“." },
+    "N":   { def:"Narrativ-Spannung — eine Aussage passt nicht zur Rolle/Erzählung, die der Akteur von sich beansprucht; kein direkter Claim-Widerspruch, aber ein echter Bruch.", ex:"„Wir handeln mutig“ vs. extrem vorsichtige Prozessbindung." },
+    "O":   { def:"Auslassung/Lücke — eine systematisch relevante Aussage fehlt im Paar.", ex:"„Die Impfung schützt zu 90%“ vs. „Es gab Nebenwirkungen“ — erst eine dritte Aussage macht es vergleichbar." },
+    "W":   { def:"Wertkonflikt — kein Streit über Fakten, sondern über Werte oder Prioritäten.", ex:"„Haushaltsdisziplin ist wichtiger“ vs. „Soziale Absicherung ist wichtiger“." },
+    "Q":   { def:"Quellen-/Akteurskonflikt — der Konflikt liegt in Interessen, Eigentum oder Machtposition der Quellen, nicht primär im Inhalt.", ex:"Lobbyverband vs. unabhängiges Forschungsinstitut zum selben Thema. Q ist eine Querdimension — der Fragenbaum führt nicht direkt dorthin; Q wird gewählt, wenn der Quellenkonflikt das prägende Merkmal ist." },
+    "P":   { def:"Prädiktiver Widerspruch — Prognose vs. späterer tatsächlicher Verlauf. Vor Ablauf des Prognosehorizonts ist es kein Widerspruch, sondern eine prüfbare Vorhersage.", ex:"„Reform bringt Aufschwung bis Sommer“ vs. Daten verschlechtern sich danach." },
+    "K":   { def:"Konsistenz/Bestätigung — beide stützen dieselbe Kernaussage, auch bei unterschiedlicher Formulierung. Wiederholungen und Paraphrasen zählen hierher.", ex:"„Deutschland muss schneller reformieren“ vs. „Die Reformen stocken“ — beides unterstreicht Reformstau." },
+    "-":   { def:"Kein Bezug / nicht vergleichbar.", ex:"Ein Gedicht über Liebe vs. eine statistische Tabelle zur Inflation — nicht auf derselben Ebene." },
+    "T3":  { def:"Unentscheidbar — Kontext reicht nicht für ein verlässliches Urteil; ehrliches „weiß nicht“, kein Scheitern.", ex:"Zwei Fachsätze ohne Fachwissen — du kannst sie nicht sicher beurteilen." }
   },
   terms: {
     rater:        { t:"Rater", d:"Eine Person, die Aussagen-Paare mit Etiketten bewertet. Galadox braucht zwei Rater (A und B), die unabhängig voneinander arbeiten." },
@@ -630,30 +691,39 @@ const GLOSSARY = {
     adjudikation: { t:"Adjudikation", d:"Der Vergleich beider Rater-Ergebnisse und die endgültige Entscheidung bei Dissens. Hier entsteht der Gold-Standard." },
     tier3:        { t:"Tier-3", d:"Ein Paar, das sich nicht sicher bewerten lässt (zu wenig Kontext). Wird ausgeklammert, kann aber später wieder vorgelegt werden." },
     cohensKappa:  { t:"Cohen's Kappa (κ)", d:"Eine Zahl zwischen -1 und 1: Wie oft waren sich beide Rater einig, über den reinen Zufall hinaus? 1 = perfekte Übereinstimmung, 0 = Zufall, negativ = seltener als Zufall." },
-    seed:         { t:"Seed", d:"Startzahl für die Zufalls-Reihenfolge der Paare. Gleicher Seed = gleiche Reihenfolge. Beide Rater brauchen denselben Seed, um dieselben Paare in derselten Reihenfolge zu sehen." },
+    seed:         { t:"Seed", d:"Startzahl für die Zufalls-Reihenfolge der Paare. Gleicher Seed = gleiche Reihenfolge. Beide Rater brauchen denselben Seed, um dieselben Paare in derselben Reihenfolge zu sehen." },
     blindheit:    { t:"Blindheit", d:"Jeder Rater sieht beim Arbeiten NICHT, was der andere geurteilt hat. Verhindert gegenseitige Beeinflussung. Technisch: durch Trennung der Sessions, nicht durch einen Server erzwungen." }
-  }
+  },
+  rules: [
+    { titel:"Modalität", text:"Forderungen und Empfehlungen („muss/soll“) sind keine prüfbaren Behauptungen — eine Forderung kann einer Feststellung nicht widersprechen. In F1 mit „Nein“ antworten; meist folgt W (Wertkonflikt) oder N (Narrativ-Spannung)." },
+    { titel:"F1-Nein-Wegweiser", text:"Wenn F1 „Nein“: Erzähl-Spannung → N; Wertekollision → W; ohne Bezug → „–“; zu wenig Substanz (Frage, Parole, reine Meinung) → T3." },
+    { titel:"Präsupposition", text:"Steckt die eigentliche Behauptung in einer unausgesprochenen Voraussetzung („Wann stoppt die Regierung die Belastung?“), schreibe erst die Voraussetzung als Aussage aus und labeln sie dann. Geht das nicht: T3." },
+    { titel:"Ironie / Zitat", text:"Nur ernsthaft Behauptetes wird gelabelt. Ironie und bloße Zitate erhalten im Zweifel T3." },
+    { titel:"Rundung", text:"Übliche Rundungsdifferenzen sind kein Widerspruch („3,8 %“ = „rund 4 %“)." },
+    { titel:"P vs. S-Z", text:"P nur, wenn eine Vorhersage nach Ablauf ihres Horizonts vom tatsächlichen Verlauf widerlegt wurde. Eine Schätzung, die später nur präzisiert wird, ist S-Z." },
+    { titel:"Wann O", text:"O nur, wenn die Auslassung systematisch, asymmetrisch und deutungszentral ist. Bloßer Kontextmangel → T3; fehlende Definition → S-D; anderer Gegenstand → S-K." }
+  ]
 };
 
 /* Entscheidungsbaum (F1..F6) */
 const TREE = {
   F1: {
-    q: "F1 — Sind beide Texte klare, überprüfbare Claims?",
-    help: "Ein Claim = prüfbare Aussage über Welt-/Domänenzustand. Meinungen ohne Tatsachenkern, reine Appelle, reine Zitate ohne klare Aussage → kein Claim.",
-    why: "Wir brauchen zwei komparable Aussagen. Wenn einer der Texte kein Claim ist, ist eine Beziehung (Widerspruch/Konsistenz/etc.) nicht definierbar.",
+    q: "F1 — Sind beide Texte klare, überprüfbare Aussagen (Claims)?",
+    help: "Ein Claim = prüfbare Aussage über einen Welt-/Sachverhalt. Meinungen ohne Tatsachenkern, reine Appelle, reine Zitate ohne klare Aussage → kein Claim. Auch Forderungen („muss/soll“) sind keine prüfbaren Behauptungen.",
+    why: "Wir brauchen zwei vergleichbare Aussagen. Wenn einer der Texte kein Claim ist, ist eine Beziehung (Widerspruch/Konsistenz/etc.) nicht definierbar.",
     yes: "F2", no: "LEAF_NWQ",  // N/W/Q/T3 — vom Nutzer zu pflücken
     example: "„Berlin hat 3,85 Mio. Einwohner“ (prüfbar) vs. „Wir sollten mehr für Bildung tun“ (Meinung, nicht prüfbar) → Nein, der zweite ist kein Claim."
   },
   F2: {
-    q: "F2 — Bezieht sich beide Aussagen auf denselben Gegenstand?",
-    help: "Gegenstand = Person, Objekt, Konzept, Datensatz, Organisation etc., worauf sich der Claim bezieht. Verschiedene Entitäten = Skopus-Konflikt.",
+    q: "F2 — Beziehen sich beide Aussagen auf denselben Gegenstand?",
+    help: "Gegenstand = Person, Objekt, Konzept, Datensatz, Organisation etc., worauf sich die Aussage bezieht. Verschiedene Entitäten → scheinbarer Widerspruch (S-K).",
     why: "Wenn A über X und B über Y spricht, ist die Frage „widersprüchlich?“ meist sinnlos.",
     yes: "F3", no: "LEAF_SKORUNDASH",
-    example: "„Die Arbeitslosigkeit in Deutschland sinkt“ vs. „Die Arbeitslosigkeit in Frankreich steigt“ → Nein, verschiedene Länder."
+    example: "„Migration entlastet den Arbeitsmarkt“ vs. „Migration belastet Kommunen“ → Nein, verschiedene Bezugsgrößen."
   },
   F3: {
     q: "F3 — Gleicher Zeitraum / Prognosehorizont?",
-    help: "Aussagen über unterschiedliche Zeiträume (z.B. 2019 vs. 2024) oder kurz- vs. langfristige Prognosen sind nicht direkt vergleichbar.",
+    help: "Aussagen über unterschiedliche Zeiträume (z.B. 2019 vs. 2024) sind nicht direkt vergleichbar. Auch Prognose vs. späterer tatsächlicher Verlauf fällt hierher (P).",
     why: "Selber Gegenstand kann zu unterschiedlichen Zeiten Verschiedenes geäußert haben — formal kein Widerspruch.",
     yes: "F4", no: "LEAF_SZODERP",
     example: "„Die Rente steigt 2024 um 3,7 %“ vs. „Die Rente stieg 2019 um 3,2 %“ → Nein, verschiedene Jahre."
@@ -661,21 +731,21 @@ const TREE = {
   F4: {
     q: "F4 — Gleiche Definition der Leitbegriffe?",
     help: "Werden Schlüsselbegriffe (z.B. „Inflation“, „Armut“, „Freiheit“, „KI“) synonym oder substanziell unterschiedlich verwendet?",
-    why: "Häufige Widerspruchs-Simulation: Definitionsdrift. Gleiche Wörter, anderes Konzept.",
+    why: "Häufige Widerspruchs-Simulation: Definitionsdrift. Gleiche Wörter, andere Bedeutung.",
     yes: "F5", no: "LEAF_SD",
     example: "„Armut sinkt“ (im Sinn von Einkommensarmut) vs. „Armut steigt“ (im Sinn von Bildungsarmut) → Nein, verschiedene Definitionen."
   },
   F5: {
     q: "F5 — Können beide gleichzeitig wahr sein?",
     help: "Logische Verträglichkeit. Wenn A und B sich gegenseitig ausschließen, ist nur einer wahr.",
-    why: "Wenn nein → echter exklusiver Widerspruch E. Wenn ja, prüfen wir auf Lücke O.",
+    why: "Wenn nein → echter Widerspruch (E). Wenn ja, prüfen wir auf Lücke (O).",
     yes: "F6", no: "LEAF_E",
-    example: "„Die Sonne geht im Osten auf“ vs. „Die Sonne geht im Westen auf“ → Nein, nur eine kann stimmen (Widerspruch E)."
+    example: "„Die Maßnahme kostet 5 Mrd.“ vs. „Die Maßnahme spart 2 Mrd.“ → Nein, nur eine kann stimmen (Echter Widerspruch E)."
   },
   F6: {
     q: "F6 — Fehlt systematisch eine relevante Aussage?",
     help: "Manche Paare ergeben erst Sinn mit einer dritten Aussage (z.B. Bedingung, Vergleichswert, Gegeninstanz).",
-    why: "Wenn eine solche Lücke systematisch ist, kennzeichnen wir das als Out-of-Scope / Lücke.",
+    why: "Wenn eine solche Lücke systematisch ist, kennzeichnen wir das als Auslassung (O).",
     yes: "LEAF_O", no: "LEAF_KNWSK",
     example: "„Die Impfung schützt zu 90 %“ vs. „Es gab Nebenwirkungen“ → Ja, ohne Kontext (wie schwer? wie oft?) fehlt eine relevante Aussage."
   }
@@ -683,47 +753,47 @@ const TREE = {
 
 /* Terminale Blätter: Mehrere erlaubte Optionen */
 const LEAF_OPTIONS = {
-  LEAF_NWQ:        { label: "F1 → Nein",  options: ["N","W","Q","T3"], final: true, desc: "Mindestens ein Text ist kein klarer Claim oder doppelt.",
+  LEAF_NWQ:        { label: "F1 → Nein",  options: ["N","W","Q","T3"], final: true, desc: "Mindestens ein Text ist kein prüfbarer Claim — dann F1 Nein. Wähle passend: Erzähl-Spannung (N), Wertekollision (W), Quellenkonflikt (Q) oder unentscheidbar (T3).",
     examples: {
-      "N":  "„Bildung ist wichtig“ — eine Meinung, nicht prüfbar.",
-      "W":  "„Berlin hat 3,85 Mio. Einwohner“ vs. „In Berlin leben 3,85 Millionen Menschen“ — dasselbe, nur umformuliert.",
-      "Q":  "„Steigt die Inflation?“ — eine Frage, keine Aussage.",
+      "N":  "„Wir handeln mutig“ vs. extrem vorsichtige Prozessbindung — Erzählung passt nicht zur Rolle.",
+      "W":  "„Haushaltsdisziplin ist wichtiger“ vs. „Soziale Absicherung ist wichtiger“ — Streit um Werte, nicht um Fakten.",
+      "Q":  "Lobbyverband vs. unabhängiges Forschungsinstitut zum selben Thema — Konflikt in der Quelle.",
       "T3": "Ein Fachsatz, bei dem dir das Fachwissen fehlt, um zu urteilen."
     } },
-  LEAF_SKORUNDASH: { label: "F2 → Nein",  options: ["-","S-K","T3"],   final: true, desc: "Verschiedene Gegenstände oder Domänen.",
+  LEAF_SKORUNDASH: { label: "F2 → Nein",  options: ["-","S-K","T3"],   final: true, desc: "Scheinbar — anderer Kontext: verschiedene Gegenstände, Gruppen, Orte oder Ebenen; oder kein Bezug.",
     examples: {
-      "-":   "Ein Gedicht über Liebe vs. eine statistische Tabelle zur Inflation — nicht auf derselben Ebene.",
-      "S-K": "„Müller verdient 5000€“ (Hans Müller) vs. „Müller verdient 5000€“ (Thomas Müller) — verschiedene Personen.",
+      "-":   "Ein Gedicht über Liebe vs. eine statistische Tabelle zur Inflation — kein Bezug.",
+      "S-K": "„Migration entlastet den Arbeitsmarkt“ vs. „Migration belastet Kommunen“ — verschiedene Bezugsgrößen.",
       "T3":  "Zwei Aussagen, bei denen du nicht sicher sagen kannst, ob sie denselben Gegenstand haben."
     } },
-  LEAF_SZODERP:    { label: "F3 → Nein",  options: ["S-Z","P","T3"],   final: true, desc: "Zeitraum oder Prognosehorizont weicht ab.",
+  LEAF_SZODERP:    { label: "F3 → Nein",  options: ["S-Z","P","T3"],   final: true, desc: "Scheinbar — andere Zeit, oder prädiktiver Widerspruch (Prognose vs. späterer Verlauf).",
     examples: {
       "S-Z": "„Die Rente steigt um 3,7 %“ (Prognose Nov.) vs. „um 4,24 %“ (endgültig März) — andere Zeitpunkte.",
-      "P":   "„2025 sinken die Preise“ vs. „Langfristig steigen sie“ — kurz- vs. langfristig.",
+      "P":   "„Reform bringt Aufschwung bis Sommer“ vs. Daten verschlechtern sich danach — Prognose widerlegt.",
       "T3":  "Zeitraum ist unklar oder nicht angegeben."
     } },
-  LEAF_SD:         { label: "F4 → Nein",  options: ["S-D","T3"],       final: true, desc: "Definitionsdrift der Leitbegriffe.",
+  LEAF_SD:         { label: "F4 → Nein",  options: ["S-D","T3"],       final: true, desc: "Scheinbar — andere Definition: gleiche Wörter, verschiedene Bedeutung.",
     examples: {
       "S-D": "„Armut sinkt“ (Einkommensarmut) vs. „Armut steigt“ (Bildungsarmut) — verschiedene Definition.",
       "T3":  "Du bist unsicher, ob die Begriffe gleich oder verschieden verwendet werden."
     } },
-  LEAF_E:          { label: "F5 → Nein",  options: ["E","T3"],         final: true, desc: "Exklusiver Widerspruch.",
+  LEAF_E:          { label: "F5 → Nein",  options: ["E","T3"],         final: true, desc: "Echter Widerspruch: beide können unter gleichen Bedingungen nicht zugleich wahr sein.",
     examples: {
-      "E":  "„Die Erde ist eine Scheibe“ vs. „Die Erde ist eine Kugel“ — nur eine kann stimmen.",
+      "E":  "„Die Maßnahme kostet 5 Mrd.“ vs. „Die Maßnahme spart 2 Mrd.“ — nur eine kann stimmen.",
       "T3": "Die Aussagen scheinen sich zu widersprechen, aber du bist nicht sicher genug."
     } },
-  LEAF_O:          { label: "F6 → Ja",    options: ["O","T3"],         final: true, desc: "Relevante Aussage fehlt im Paar.",
+  LEAF_O:          { label: "F6 → Ja",    options: ["O","T3"],         final: true, desc: "Auslassung/Lücke: eine systematisch relevante Aussage fehlt im Paar.",
     examples: {
       "O":  "„Die Impfung schützt zu 90 %“ vs. „Es gab Nebenwirkungen“ — erst mit mehr Kontext vergleichbar.",
       "T3": "Du vermutest eine Lücke, bist aber unsicher, ob sie systematisch ist."
     } },
-  LEAF_KNWSK:      { label: "F6 → Nein",  options: ["K","N","W","S-K","-","T3"], final: true, desc: "Verträglich / komplementär / paraphrastisch.",
+  LEAF_KNWSK:      { label: "F6 → Nein",  options: ["K","N","W","S-K","-","T3"], final: true, desc: "Verträglich / Konsistenz — beide stützen dieselbe Kernaussage; Wiederholungen/Paraphrasen zählen hierher. Sonderfälle rechts.",
     examples: {
-      "K":   "„Berlin liegt im Osten“ + „Berlin ist Hauptstadt“ — beides stimmt, kein Widerspruch.",
-      "N":   "Einer der Texte ist keine klare Aussage.",
-      "W":   "Beide sagen inhaltlich dasselbe.",
-      "S-K": "Trotz Verträglichkeit: verschiedene Gegenstände.",
-      "-":   "Nicht auf derselben Ebene vergleichbar.",
+      "K":   "„Deutschland muss schneller reformieren“ vs. „Die Reformen stocken“ — beides unterstreicht Reformstau.",
+      "N":   "Erzähl-Spannung: eine Aussage passt nicht zur behaupteten Rolle.",
+      "W":   "Wertekollision — Streit um Prioritäten, nicht um Fakten.",
+      "S-K": "Trotz Verträglichkeit: verschiedene Bezugsgrößen.",
+      "-":   "Kein Bezug / nicht vergleichbar.",
       "T3":  "Du bist unsicher, welche der Optionen passt."
     } }
 };
@@ -1102,6 +1172,18 @@ function updateDeleteButton(){ // Fix 4
   const btn = $("#btnDeleteDecision");
   if (btn) btn.disabled = !(p && state.decisions[p.pair_id]);
 }
+/* v0.1.4: Ein-Zeilen-Hinweis je Frage — was bedeutet sie praktisch? */
+function stepHint(step){
+  switch(step){
+    case "F1": return "es geht darum, ob beide Texte prüfbare Aussagen sind";
+    case "F2": return "es geht darum, ob beide über dasselbe Thema sprechen";
+    case "F3": return "es geht um den Zeitraum oder Prognosehorizont";
+    case "F4": return "es geht darum, ob die Schlüsselwörter dieselbe Bedeutung haben";
+    case "F5": return "es geht darum, ob sich beide Aussagen vertragen";
+    case "F6": return "es geht darum, ob eine wichtige Aussage im Paar fehlt";
+  }
+  return "";
+}
 function renderWizard(){
   const node = wizard.currentNode;
   // leaf?
@@ -1114,7 +1196,8 @@ function renderWizard(){
   $("#wizQ").textContent = step.q;
   $("#wizHelp").textContent = step.help;
   $("#wizWhy").textContent = step.why;
-  $("#wizStep").textContent = `Schritt ${TREE_ORDER.indexOf(node)+1}/${TREE_ORDER.length} · ${node}`;
+  // v0.1.4: Ein-Zeilen-Hinweis, was die Frage praktisch bedeutet
+  $("#wizStep").textContent = `Frage ${TREE_ORDER.indexOf(node)+1} von ${TREE_ORDER.length} — ${stepHint(node)}`;
   // fill
   const idx = TREE_ORDER.indexOf(node);
   $("#wizFill").style.width = (((idx+1)/TREE_ORDER.length)*100) + "%";
@@ -1169,7 +1252,7 @@ function renderLeaf(leafKey){
   $("#wizChoices").className = "choices single";
   $("#wizChoices").innerHTML = leaf.options.map(opt => `
     <button data-final="${opt}">
-      <span class="lab">${escapeHtml(opt)} · ${escapeHtml(LABEL_TEXT[opt].split(" — ")[0])}</span>
+      <span class="lab">${escapeHtml(opt)} · ${escapeHtml(LABEL_NAME[opt] || "")}</span>
       ${escapeHtml(LABEL_TEXT[opt])}
     </button>
   `).join("");
@@ -1249,9 +1332,15 @@ function updateLabelPreview(){
   const lp = $("#labelPreview");
   if (!lab){ lp.style.display = "none"; return; }
   lp.style.display = "";
-  $("#lpVal").textContent = lab + " — " + LABEL_TEXT[lab].split(" — ")[0].slice(2).trim();
+  // v0.1.4: Klartext-Name + Ein-Satz-Begründung aus der Definition
+  $("#lpVal").textContent = labelDisplay(lab); // "S-Z — Scheinbar, andere Zeit"
   $("#lpDesc").textContent = LABEL_TEXT[lab];
-  $("#lpPath").textContent = "Pfad: " + (d.answers||[]).map(a => pathEntry(a)).join("  →  "); // Fix 5
+  // Ein-Satz-Begründung aus dem gewählten Pfad/Blatt, falls vorhanden (z.B. "S-Z, weil … verschiedene Zeitpunkte")
+  const lastAns = (d.answers||[])[(d.answers||[]).length-1];
+  const leafKey = lastAns && lastAns.leafKey;
+  const leaf = leafKey ? LEAF_OPTIONS[leafKey] : null;
+  const why = leaf ? leaf.desc : (LABEL_NAME[lab] || "");
+  $("#lpPath").textContent = lab + ", weil: " + why + "  ·  Pfad: " + (d.answers||[]).map(a => pathEntry(a)).join("  →  ");
 }
 
 function renderLabelScreen(){
@@ -1624,8 +1713,8 @@ function renderAdjudication(){
       : it.status === "dissent"
         ? `<span class="tag-mini dissent">Dissens</span>`
         : `<span class="tag-mini">Unvollst.</span>`;
-    if (it.tier3) tr.innerHTML = `<td>${escapeHtml(it.pair_id)}</td><td>${tag} <span class="tag-mini t3">T3</span></td><td>${escapeHtml(it.r1?.label||"—")}</td><td>${escapeHtml(it.r2?.label||"—")}</td><td>—</td><td>—</td><td><button class="btn warn" data-act="reopen" data-pid="${escapeHtml(it.pair_id)}">Wiedervorlage</button></td>`;
-    else if (it.status === "consensus") tr.innerHTML = `<td>${escapeHtml(it.pair_id)}</td><td>${tag}</td><td>${escapeHtml(it.r1?.label||"—")}</td><td>${escapeHtml(it.r2?.label||"—")}</td><td class="muted">—</td><td><strong>${escapeHtml(it.gold_label||"—")}</strong></td><td class="muted">auto</td>`;
+    if (it.tier3) tr.innerHTML = `<td>${escapeHtml(it.pair_id)}</td><td>${tag} <span class="tag-mini t3">T3 — Unentscheidbar</span></td><td>${escapeHtml(labelDisplay(it.r1?.label))}</td><td>${escapeHtml(labelDisplay(it.r2?.label))}</td><td>—</td><td>—</td><td><button class="btn warn" data-act="reopen" data-pid="${escapeHtml(it.pair_id)}">Wiedervorlage</button></td>`;
+    else if (it.status === "consensus") tr.innerHTML = `<td>${escapeHtml(it.pair_id)}</td><td>${tag}</td><td>${escapeHtml(labelDisplay(it.r1?.label))}</td><td>${escapeHtml(labelDisplay(it.r2?.label))}</td><td class="muted">—</td><td><strong>${escapeHtml(labelDisplay(it.gold_label))}</strong></td><td class="muted">auto</td>`;
     else {
       // dissent: render side-by-side paths with divergence highlight
       const div = it.divergence || {};
@@ -1642,16 +1731,16 @@ function renderAdjudication(){
         </div>
         <div class="muted" style="font-size:10.5px;margin-top:4px">erster abweichender Knoten: <strong>${escapeHtml((div.r1||"—")+"  ↔  "+(div.r2||"—"))}</strong></div>
       `;
-      const goldCell = it.gold_label ? `<strong>${escapeHtml(it.gold_label)}</strong>` : `<span class="muted">offen</span>`;
+      const goldCell = it.gold_label ? `<strong>${escapeHtml(labelDisplay(it.gold_label))}</strong>` : `<span class="muted">offen</span>`;
       const action = `
         <div class="row" style="gap:4px">
           <select data-pid="${escapeHtml(it.pair_id)}" class="goldSel">
             <option value="">— Gold setzen —</option>
-            ${LABEL_SET.map(l => `<option value="${l}" ${it.gold_label===l?"selected":""}>${l}</option>`).join("")}
+            ${LABEL_SET.map(l => `<option value="${l}" ${it.gold_label===l?"selected":""}>${escapeHtml(l + " — " + (LABEL_NAME[l]||""))}</option>`).join("")}
           </select>
           <button class="btn t3" data-act="t3" data-pid="${escapeHtml(it.pair_id)}" ${it.tier3?"disabled":""}>T3</button>
         </div>`;
-      tr.innerHTML = `<td>${escapeHtml(it.pair_id)}</td><td>${tag}</td><td>${escapeHtml(it.r1?.label||"—")}</td><td>${escapeHtml(it.r2?.label||"—")}</td><td>${pathCell}</td><td>${goldCell}</td><td>${action}</td>`;
+      tr.innerHTML = `<td>${escapeHtml(it.pair_id)}</td><td>${tag}</td><td>${escapeHtml(labelDisplay(it.r1?.label))}</td><td>${escapeHtml(labelDisplay(it.r2?.label))}</td><td>${pathCell}</td><td>${goldCell}</td><td>${action}</td>`;
     }
     tb.appendChild(tr);
   }
@@ -1848,7 +1937,7 @@ function renderReport(){
   html += `<div class="panel"><h2>Tier-3-Liste</h2>`;
   if (t3.length === 0) html += `<p class="muted">Keine Tier-3-Paare.</p>`;
   else html += `<table class="table"><thead><tr><th>pair_id</th><th>r1.label</th><th>r2.label</th><th>Adjudikation</th></tr></thead><tbody>`+
-    t3.map(i => `<tr><td>${escapeHtml(i.pair_id)}</td><td>${escapeHtml(i.r1?.label||"—")}</td><td>${escapeHtml(i.r2?.label||"—")}</td><td>${i.adjudication?escapeHtml(JSON.stringify(i.adjudication)):"<span class='muted'>—</span>"}</td></tr>`).join("") + `</tbody></table>`;
+    t3.map(i => `<tr><td>${escapeHtml(i.pair_id)}</td><td>${escapeHtml(labelDisplay(i.r1?.label))}</td><td>${escapeHtml(labelDisplay(i.r2?.label))}</td><td>${i.adjudication?escapeHtml(JSON.stringify(i.adjudication)):"<span class='muted'>—</span>"}</td></tr>`).join("") + `</tbody></table>`;
   html += `</div>`;
 
   // Dissent table
@@ -1859,10 +1948,10 @@ function renderReport(){
       const d = i.divergence || {};
       return `<tr>
         <td>${escapeHtml(i.pair_id)}</td>
-        <td><span class="tag-mini">${escapeHtml(i.r1?.label||"—")}</span></td>
-        <td><span class="tag-mini">${escapeHtml(i.r2?.label||"—")}</span></td>
+        <td><span class="tag-mini">${escapeHtml(labelDisplay(i.r1?.label))}</span></td>
+        <td><span class="tag-mini">${escapeHtml(labelDisplay(i.r2?.label))}</span></td>
         <td><div class="divnode a">${escapeHtml(d.r1||"—")}</div><div class="divnode b" style="margin-top:3px">${escapeHtml(d.r2||"—")}</div></td>
-        <td>${i.gold_label ? `<strong>${escapeHtml(i.gold_label)}</strong>` : (i.tier3?`<span class="tag-mini t3">T3</span>`:`<span class="muted">offen</span>`)}</td>
+        <td>${i.gold_label ? `<strong>${escapeHtml(labelDisplay(i.gold_label))}</strong>` : (i.tier3?`<span class="tag-mini t3">T3</span>`:`<span class="muted">offen</span>`)}</td>
       </tr>`;
     }).join("") + `</tbody></table>`;
   html += `</div>`;
@@ -1980,6 +2069,13 @@ function renderGlossary(){
       if (!t) return "";
       return `<div class="glossary-term"><div class="t">${escapeHtml(t.t)}</div><div class="d">${escapeHtml(t.d)}</div></div>`;
     }).join("");
+  }
+  // v0.1.4: Sonderregeln (defensiv)
+  const ruleBox = $("#glossaryRules");
+  if (ruleBox && GLOSSARY && Array.isArray(GLOSSARY.rules)){
+    ruleBox.innerHTML = GLOSSARY.rules.map((r, i) =>
+      r && r.text ? `<div class="glossary-rule"><div class="rt">Regel ${i+1}: ${escapeHtml(r.titel||"")}</div><div class="rd">${escapeHtml(r.text)}</div></div>` : ""
+    ).join("");
   }
 }
 
