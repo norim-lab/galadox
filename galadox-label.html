@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Galadox-Label — Gold-Standard Builder (v0.1.4)</title>
+<title>Galadox-Label — Gold-Standard Builder (v0.1.5)</title>
 <style>
 /* ============ Galadox-Label Design System (offline, no external assets) ============ */
 :root{
@@ -218,7 +218,7 @@ textarea{min-height:90px;resize:vertical;font-family:var(--mono);font-size:12.5p
   <header class="top">
     <div class="brand">
       <div class="mark"></div>
-      <h1>Galadox-Label <small>v0.1.4 · offline</small></h1>
+      <h1>Galadox-Label <small>v0.1.5 · offline</small></h1>
     </div>
     <div class="row">
       <div class="modebar" id="modebar">
@@ -590,6 +590,12 @@ textarea{min-height:90px;resize:vertical;font-family:var(--mono);font-size:12.5p
    Keine Änderung an: LABEL_SET (Codes), validateDataset, Lock-Mechanik, mulberry32/detShuffle,
    adjudicate, Cohen's Kappa, persistDecision, 4 Exporte, STORE_KEY, LOCK_KEY.
    In Exporten/localStorage stehen weiterhin NUR die Codes (E, S-K, …).
+*/
+
+/* ---- v0.1.5 Changelog ----
+   v0.1.5: Kleine UX-Korrekturen (über v0.1.4 hinaus):
+   - "Entscheidung löschen" wird nach Wizard-Finish sofort aktiv (kein UI-Lag beim letzten Paar).
+   - "Was tun?"-Hinweise für a_id/b_id decken fehlende IDs UND fehlende Referenzen ab.
 */
 
 /* ---------- Konfiguration & Konstanten ---------- */
@@ -1007,8 +1013,8 @@ const ERR_HINTS = {
   "id":             "Diesem Objekt fehlt eine eindeutige ID (oder sie ist leer). Jede Aussage braucht ein eindeutiges Feld \"id\".",
   "text":           "Der Text der Aussage fehlt oder ist keine Zeichenkette. Trage unter \"text\" den eigentlichen Aussagesatz ein.",
   "pair_id":        "Diesem Paar fehlt eine pair_id. Jedes Paar braucht ein eindeutiges Feld \"pair_id\".",
-  "a_id":           "Das Paar verweist auf eine Aussage-ID (a_id), die es in der claims-Liste nicht gibt. Tippfehler in der ID prüfen oder die fehlende Aussage ergänzen.",
-  "b_id":           "Das Paar verweist auf eine Aussage-ID (b_id), die es in der claims-Liste nicht gibt. Tippfehler in der ID prüfen oder die fehlende Aussage ergänzen.",
+  "a_id":           "a_id fehlt oder verweist auf eine Aussage-ID, die es in der claims-Liste nicht gibt. Prüfe Tippfehler oder ergänze die fehlende Aussage.",
+  "b_id":           "b_id fehlt oder verweist auf eine Aussage-ID, die es in der claims-Liste nicht gibt. Prüfe Tippfehler oder ergänze die fehlende Aussage.",
   "decision.label": "Das gespeicherte Etikett gehört nicht zum erlaubten 12er-Label-Set (E, S-K, S-Z, S-D, N, O, W, Q, P, K, -, T3). Alte/fehlerhafte Session — neu labeln oder korrigieren.",
   "claims":         "Das Feld \"claims\" ist kein Array (Liste). Es muss eine Liste von Aussagen-Objekten sein, z.B. [{\"id\":\"c1\",...}].",
   "pairs":          "Das Feld \"pairs\" ist kein Array (Liste). Es muss eine Liste von Paar-Objekten sein, z.B. [{\"pair_id\":\"p1\",...}]."
@@ -1302,6 +1308,7 @@ function finalizeLeaf(label){
   $("#noteField").classList.remove("required-missing");
   $("#noteWarn").style.display = "none";
   persistDecision();
+  updateDeleteButton();
   toast("Label gesetzt: " + label);
   // move to next pair automatically after short delay
   setTimeout(() => { if (state.cursor < state.order.length - 1){ state.cursor++; startWizardForCurrent(); renderPairCards(); saveLocal(); } }, 600);
